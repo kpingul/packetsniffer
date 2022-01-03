@@ -1,8 +1,8 @@
 TODO--
 
-1.Add CLI capabilities
+1.Add CLI capabilities -- DONE
 	-TCP/UDP
 	-Port #
 
-2.Fix issue with inactive NICs being captured
+2.Integrate sniffing capabailities into CLI
 
