@@ -20,6 +20,12 @@ var (
 
 func main() {
 
+    time.Sleep(60 * time.Second)
+
+}
+
+func runSniffer() {
+
 	// Find all devices
     devices, err := pcap.FindAllDevs()
     if err != nil {
@@ -68,7 +74,5 @@ func main() {
         //}(device)
 
     }
-
-    time.Sleep(60 * time.Second)
 
 }
