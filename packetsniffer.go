@@ -4,8 +4,10 @@ import(
 	"fmt"
 	"log"
 	"time"
+	"os"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/urfave/cli/v2"
 )
 
 //configurations for capture
@@ -17,10 +19,53 @@ var (
     handle       *pcap.Handle
 )
 
-
 func main() {
 
-    time.Sleep(60 * time.Second)
+	//Initial CLI App Setup
+	app := &cli.App{
+		Name:        "Packet Sniffer",
+		Version:     "0.1.0",
+		Description: "Sniffs traffic based on protocol and port number",
+		Authors: []*cli.Author{
+			{Name: "KP",},
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "protocol", Value: "TCP", Usage: "TCP/UDP", Required: true,},
+			&cli.StringFlag{Name: "port", Value: "80", Usage: "Choose port between 1-65535", Required: true,},
+		},
+		Action: func(c *cli.Context) error {
+
+			valChecks := true
+	
+	     	//input validation checks
+	     	if c.String("protocol") != "TCP" && c.String("protocol") != "UDP" {
+	     		fmt.Println("Invalid protocol")
+	     		valChecks = false
+	     	}
+	     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
+	     		fmt.Println("Invalid port")
+	     		valChecks = false
+	     	} 
+
+
+	     	//run processes here if 
+	     	//input checks out 
+	     	if valChecks {
+	     		fmt.Println("run program..")
+	     	} else {
+	     		fmt.Println("stop program..")
+	     		return nil
+	     	}
+
+	     	return nil
+	    },
+	}
+
+	//Run CLI
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }
 
@@ -74,5 +119,7 @@ func runSniffer() {
         //}(device)
 
     }
+
+    //time.Sleep(60 * time.Second)
 
 }
