@@ -1,0 +1,8 @@
+TODO--
+
+1.Add CLI capabilities
+	-TCP/UDP
+	-Port #
+
+2.Fix issue with inactive NICs being captured
+

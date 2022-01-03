@@ -1,10 +1,8 @@
 # packetsniffer
 
-what is packet sniffer?
+*The goal of packet sniffer:* 
 
-The goal of packet sniffer: 
-
-1.create CLI
+1.interactive CLI
 
 2.choose either TCP/UDP traffic
 
