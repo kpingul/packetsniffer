@@ -12,6 +12,10 @@
 
 5.store results in pcap file
 
+## platform support
+
+Windows 8/8.1/10
+
 ## dependencies
 
-Windows - must download winpcap driver to fix the missing wpcap.dll issue
+WINPCAP - must download driver to prevent any DLL issues
