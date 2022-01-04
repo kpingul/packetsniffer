@@ -14,7 +14,6 @@ import(
 
 //configurations for capture
 var (
-
 	hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
     snapshot_len int32  = 1024
     promiscuous  bool   = false
