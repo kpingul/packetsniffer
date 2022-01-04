@@ -4,5 +4,7 @@ TODO--
 	-TCP/UDP
 	-Port #
 
-2.Integrate sniffing capabailities into CLI
+2.Integrate sniffing capabailities into CLI -- DONE
+
+3.After packet capture, create PCAP file 
 
