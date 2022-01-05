@@ -7,15 +7,21 @@ import(
 	"os"
 	"strconv"
 	"strings"
+	"crypto/md5"
+    "encoding/hex"
 	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
+	"github.com/google/gopacket/pcapgo"
 	"github.com/urfave/cli/v2"
 )
 
 //configurations for capture
 var (
-	hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
+		timestampLayout = "01-02-2006"
+		hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
     	snapshot_len int32  = 1024
+    	snapshot_lenPCAPFile uint32  = 1024
     	promiscuous  bool   = false
     	err          error
     	timeout      time.Duration = 30 * time.Second
@@ -75,7 +81,25 @@ func main() {
 
 func runSniffer(protocol string, port int64) {
 
-    	// Open device
+    //unix timestamp
+    currentTimestamp := time.Now()
+
+    //create hash using current timestamp
+	hash := md5.Sum([]byte(currentTimestamp.String()))
+   	hashValue := hex.EncodeToString(hash[:])
+
+    //filename based on 
+    fileName := "pcap-" + currentTimestamp.Format(timestampLayout) + "-" + hashValue
+	
+	//create new file for pcap 
+	pcapFile, _ := os.Create(fileName)
+	
+	// Open output pcap file and write header
+	w := pcapgo.NewWriter(pcapFile)
+	w.WriteFileHeader(snapshot_lenPCAPFile, layers.LinkTypeEthernet)
+	defer pcapFile.Close()
+
+    // Open device
 	handle, err = pcap.OpenLive(hardCodedVMNIC, snapshot_len, promiscuous, timeout)
 
 	if err != nil {
@@ -90,7 +114,7 @@ func runSniffer(protocol string, port int64) {
 	// Set filter
 	err = handle.SetBPFFilter(filter)
 	if err != nil {
-	log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	// Output current capturing config
@@ -99,8 +123,9 @@ func runSniffer(protocol string, port int64) {
 	// Use the handle as a packet source to process all packets
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
-	// Process packet here
-	fmt.Println(packet)
+
+		//write packet to pcap file
+		w.WritePacket(packet.Metadata().CaptureInfo, packet.Data())	
 	}
 
 }
