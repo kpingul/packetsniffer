@@ -25,18 +25,18 @@ Windows 8/8.1/10
 ## Short term goals
 
 * Create a threat detection service 
-	-based on ip addresses and domains
-	-checks whether host visisted a suspicious/malicious website 
-	-utlize free threat intel feeds and open source API's
-	-scheduling mechanism to update feeds
+	- based on ip addresses and domains
+	- checks whether host visisted a suspicious/malicious website 
+	- utlize free threat intel feeds and open source API's
+	- scheduling mechanism to update feeds
 	
 * Create a UI for pcap file analysis
-	-can be used by incident response and SOC teams to find any suspicious network activies on a workstation.
+	- can be used by incident response and SOC teams to find any suspicious network activies on a workstation.
 
 ## Further down the road goals... adding more intelligence 
 
 * Configuration to capture traffic based on a set of rules like:
-	-CPU resource spikes and deviatiates from baseline  
+	- CPU resource spikes and deviatiates from baseline  
 
 * Firewall integrations to block suspicious communcation paths 
 
