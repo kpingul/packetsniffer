@@ -1,39 +1,42 @@
 # packetsniffer
 
-*The goal of packet sniffer:* 
+Simple and useful sniffer that captures traffic based on given preferences.
 
-	1.interactive CLI
+## Another Sniffer?
 
-	2.choose either TCP/UDP traffic
+The goal of this project was to extend my knowledge around networking and the significance of packet analysis on the defense side of things. 
 
-	3.choose a port number ( will extend to multiple  ports later on..)
+## Features
 
-	4.capture network traffic
+* Interactive CLI
 
-	5.store results in pcap file
+* Packet capture 
 
-*short term goals*
+* PCAP file analysis 
 
-	1.Create a threat detection service 
-		-based on ip addresses and domains
-		-checks whether host visisted a suspicious/malicious website 
-		-utlize free threat intel feeds and open source API's
-		-scheduling mechanism to update feeds
-	
-	2.Create a UI for pcap file analysis
-		-can be used by incident response and SOC teams to find any suspicious network activies on a workstation.
+## Dependencies
 
-*further down the road goals... adding more intelligence to the sniffer*
+WINPCAP - must download driver to prevent any DLL issues
 
-	1.Configuration to capture traffic based on a set of rules like:
-		-CPU resource spikes and deviatiates from baseline  
-
-	2.Firewall integrations to block suspicious communcation paths 
-
-## platform support
+## Plaform support
 
 Windows 8/8.1/10
 
-## dependencies
+## Short term goals
 
-WINPCAP - must download driver to prevent any DLL issues
+* Create a threat detection service 
+	-based on ip addresses and domains
+	-checks whether host visisted a suspicious/malicious website 
+	-utlize free threat intel feeds and open source API's
+	-scheduling mechanism to update feeds
+	
+* Create a UI for pcap file analysis
+	-can be used by incident response and SOC teams to find any suspicious network activies on a workstation.
+
+## Further down the road goals... adding more intelligence 
+
+* Configuration to capture traffic based on a set of rules like:
+	-CPU resource spikes and deviatiates from baseline  
+
+* Firewall integrations to block suspicious communcation paths 
+
