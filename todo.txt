@@ -6,5 +6,12 @@ TODO--
 
 2.Integrate sniffing capabailities into CLI -- DONE
 
-3.After packet capture, create PCAP file 
+3.After packet capture, create PCAP file -- DONE
+
+4.Start on threat detection service
+	-extract domains and ip addresses from packet
+	-research open source threat intel feeds
+		-web scraper?
+		-API's ( rating limit? scheduling mechanism? )
+	
 
