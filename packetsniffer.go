@@ -8,7 +8,7 @@ import(
 	"strconv"
 	"strings"
 	"crypto/md5"
-    "encoding/hex"
+    	"encoding/hex"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -18,8 +18,8 @@ import(
 
 //configurations for capture
 var (
-		timestampLayout = "01-02-2006"
-		hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
+	timestampLayout = "01-02-2006"
+	hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
     	snapshot_len int32  = 1024
     	snapshot_lenPCAPFile uint32  = 1024
     	promiscuous  bool   = false
@@ -81,16 +81,16 @@ func main() {
 
 func runSniffer(protocol string, port int64) {
 
-    //unix timestamp
-    currentTimestamp := time.Now()
+    	//unix timestamp
+    	currentTimestamp := time.Now()
 
-    //create hash using current timestamp
+    	//create hash using current timestamp
 	hash := md5.Sum([]byte(currentTimestamp.String()))
    	hashValue := hex.EncodeToString(hash[:])
-
-    //filename based on 
-    fileName := "pcap-" + currentTimestamp.Format(timestampLayout) + "-" + hashValue
 	
+	//filename based on timestamp and md5 hash
+	fileName := "pcap-" + currentTimestamp.Format(timestampLayout) + "-" + hashValue + ".pcap"
+		
 	//create new file for pcap 
 	pcapFile, _ := os.Create(fileName)
 	
@@ -99,7 +99,7 @@ func runSniffer(protocol string, port int64) {
 	w.WriteFileHeader(snapshot_lenPCAPFile, layers.LinkTypeEthernet)
 	defer pcapFile.Close()
 
-    // Open device
+    	// Open device
 	handle, err = pcap.OpenLive(hardCodedVMNIC, snapshot_len, promiscuous, timeout)
 
 	if err != nil {
@@ -126,6 +126,7 @@ func runSniffer(protocol string, port int64) {
 
 		//write packet to pcap file
 		w.WritePacket(packet.Metadata().CaptureInfo, packet.Data())	
+	
 	}
 
 }

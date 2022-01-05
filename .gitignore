@@ -16,3 +16,5 @@
 
 go.mod
 go.sum
+
+*.pcap
