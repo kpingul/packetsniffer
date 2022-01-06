@@ -13,5 +13,8 @@ TODO--
 	-research open source threat intel feeds
 		-web scraper?
 		-API's ( rating limit? scheduling mechanism? )
+		-maxmind static IP GeoLite2 free database
+			-provides geolocation data such as country, city,and ASN
+			-https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en
 	
 
