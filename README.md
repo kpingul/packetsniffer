@@ -14,6 +14,10 @@ The goal of this project was to extend my knowledge around networking and the si
 
 * PCAP file analysis 
 
+## Installation
+
+Go version 1.17.6+
+
 ## Dependencies
 
 WINPCAP - must download driver to prevent any DLL issues
