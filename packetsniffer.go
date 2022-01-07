@@ -26,6 +26,9 @@ var (
     	err          error
     	timeout      time.Duration = 30 * time.Second
     	handle       *pcap.Handle
+    	ethLayer layers.Ethernet
+    	ipLayer  layers.IPv4
+    	tcpLayer layers.TCP
 )
 
 func main() {
@@ -125,7 +128,34 @@ func runSniffer(protocol string, port int64) {
 	for packet := range packetSource.Packets() {
 
 		//write packet to pcap file
-		w.WritePacket(packet.Metadata().CaptureInfo, packet.Data())	
+		w.WritePacket(packet.Metadata().CaptureInfo, packet.Data())
+
+
+		//use existing structures to store the packet information 
+		//instead of creating new structs for every packet which 
+		//takes time and memory. 
+		parser := gopacket.NewDecodingLayerParser(
+	            layers.LayerTypeEthernet,
+	            &ethLayer,
+	            &ipLayer,
+	            &tcpLayer,
+	        )
+	        foundLayerTypes := []gopacket.LayerType{}
+
+	        err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
+	        if err != nil {
+	            fmt.Println("Trouble decoding layers: ", err)
+	        }
+
+	        for _, layerType := range foundLayerTypes {
+	            if layerType == layers.LayerTypeIPv4 {
+	                fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)
+	            }
+	            // if layerType == layers.LayerTypeTCP {
+	            //     fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
+	            //     fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+	            // }
+	        }	
 	
 	}
 
