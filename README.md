@@ -26,7 +26,7 @@ Windows 8/8.1/10
 
 Go version 1.17.6+
 
-# Commands
+## Commands
 
 Usage:
 
