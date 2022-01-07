@@ -60,13 +60,14 @@ func main() {
 	app := &cli.App{
 		Name:        "Packet Sniffer",
 		Version:     "0.1.0",
-		Description: "Sniffs traffic based on protocol and port number",
+		Description: "PCAP file analysis & sniffer based on protocol and port number",
 		Authors: []*cli.Author{
 			{Name: "KP",},
 		},
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "protocol", Value: "TCP", Usage: "TCP/UDP", Required: true,},
-			&cli.StringFlag{Name: "port", Value: "80", Usage: "Choose port between 1-65535", Required: true,},
+			&cli.StringFlag{Name: "filepath", Value: "", Usage: "Choose a pcap file to analyze", Required: false,},
+			&cli.StringFlag{Name: "protocol", Value: "", Usage: "TCP/UDP", Required: false,},
+			&cli.StringFlag{Name: "port", Value: "", Usage: "Choose port between 1-65535", Required: false,},
 		},
 		Action: func(c *cli.Context) error {
 
@@ -74,18 +75,32 @@ func main() {
 			valChecks := true
 
 		    	//input validation checks
-		    	if strings.ToLower(c.String("protocol")) == "tcp" && strings.ToLower(c.String("protocol")) == "udp" {
-		     		fmt.Println("Invalid protocol")
-		     		valChecks = false
-		     	}
+		    	if (c.String("filepath") == "" ) {
+		    		if c.String("protocol") == "" {
+		    			fmt.Println("Invalid protocol")
+		    			valChecks = false 
+		    		}
+		    		if c.String("port") == "" {
+		    			fmt.Println("Invalid port")
+		    			valChecks = false 
+		    		}
+			    	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
+			     		fmt.Println("Invalid protocol")
+			     		valChecks = false
+			     	}
 
-		     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
-		     		fmt.Println("Invalid port")
-		     		valChecks = false
-		     	} 
+			     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
+			     		fmt.Println("Invalid port")
+			     		valChecks = false
+			     	} 
+			} else {
+				valChecks = false
+			     	fmt.Println("ANALYZE FILE..")
+
+			}
 
 
-		     	//runif input checks out 
+		     	// runif input checks out 
 		     	if valChecks {
 		     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
 		     	} else {
@@ -106,7 +121,7 @@ func main() {
 }
 
 func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
-
+	fmt.Println("running sniffer...")
     	//unix timestamp
     	currentTimestamp := time.Now()
 
