@@ -14,6 +14,7 @@ import(
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket/pcapgo"
 	"github.com/urfave/cli/v2"
+	"github.com/asdine/storm/v3"
 )
 
 //configurations for capture
@@ -32,7 +33,28 @@ var (
     	dnsLayer layers.DNS
 )
 
+type IPRecord struct {
+  	ID string `storm:"id"`// primary key
+  	Protocol string 
+  	SrcIP string 
+  	DstIP string 
+}
+type DNSRecord struct {
+	ID string `storm:"id"`// primary key
+  	Domain string 
+  	SrcIP string 
+  	DstIP string 
+
+}
+
 func main() {
+
+	snifferDB, errDB := storm.Open("sniffer.db")
+	if errDB != nil {
+		log.Fatal(errDB) 
+	}
+
+	defer snifferDB.Close()
 
 	//Initial CLI App Setup
 	app := &cli.App{
@@ -65,7 +87,7 @@ func main() {
 
 		     	//runif input checks out 
 		     	if valChecks {
-		     		runSniffer(c.String("protocol"), c.Int64("port"))
+		     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
 		     	} else {
 		     		fmt.Println("stop program..")
 		     		return nil
@@ -83,7 +105,7 @@ func main() {
 
 }
 
-func runSniffer(protocol string, port int64) {
+func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 
     	//unix timestamp
     	currentTimestamp := time.Now()
@@ -155,7 +177,16 @@ func runSniffer(protocol string, port int64) {
 
 	        	//extract ipv4 data
 	        	if layerType == layers.LayerTypeIPv4 {
-	                	fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)
+	                	
+	                	//create ip record
+	                	record := CreateIPRecord(ipLayer)
+
+	                	//store in db
+				errSave := snifferDB.Save(&record)
+				if errSave != nil {
+					log.Fatal(errSave)
+				}
+
 	            	}
 	            	
 	            	//extract dns data
@@ -173,7 +204,7 @@ func runSniffer(protocol string, port int64) {
 						
 						//record type
 						fmt.Println("RECORD TYPE - " + dnsQuestion.Type.String())
-						
+
 						//extract answers
 						if dnsANCount > 0 {
 
@@ -194,3 +225,19 @@ func runSniffer(protocol string, port int64) {
 
 }
 
+func CreateIPRecord (ipLayer layers.IPv4) IPRecord{
+	return IPRecord{
+		ID: ipLayer.SrcIP.String(),
+		Protocol: ipLayer.Protocol.String(),
+		SrcIP: ipLayer.SrcIP.String(),
+		DstIP: ipLayer.DstIP.String(),
+	}
+}
+func CreateDNSRecord (dnsLayer layers.DNS) DNSRecord{
+	return DNSRecord{
+		ID: ipLayer.SrcIP.String(),
+		Domain: ipLayer.Protocol.String(),
+		SrcIP: ipLayer.SrcIP.String(),
+		DstIP: ipLayer.DstIP.String(),
+	}
+}
