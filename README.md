@@ -14,10 +14,6 @@ The goal of this project was to extend my knowledge around networking and the si
 
 * PCAP file analysis 
 
-## Installation
-
-Go version 1.17.6+
-
 ## Dependencies
 
 WINPCAP - must download driver to prevent any DLL issues
@@ -25,6 +21,38 @@ WINPCAP - must download driver to prevent any DLL issues
 ## Plaform support
 
 Windows 8/8.1/10
+
+## Installation
+
+Go version 1.17.6+
+
+# Commands
+
+Usage:
+
+```sh
+go run packetsniffer.go <flag>
+```
+
+#### `--filepath <path>`
+
+Path to the pcap file to analyze
+
+#### `--protocol <string>`
+
+Protocol either TCP or UDP
+
+#### `--port <int>`
+
+Port ranges from 1-65535
+
+#### `--help`
+
+Show help
+
+#### `--version`
+
+Show current version
 
 ## Short term goals
 
