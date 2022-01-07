@@ -11,6 +11,7 @@ TODO--
 4.Start on threat detection service
 	-extract domain from DNS -- done
 	-extract src and dst ip from IPv4 -- done 
+	-storage? where do we store the data?
 	-research open source threat intel feeds
 		-web scraper?
 		-API's ( rating limit? scheduling mechanism? )

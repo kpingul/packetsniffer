@@ -25,7 +25,7 @@ Windows 8/8.1/10
 ## Short term goals
 
 * Create a threat detection service 
-	- based on ip addresses, domains, ports
+	- based on ip addresses, domains
 	- checks whether workstation visisted a possible suspicious or malicious website 
 	- internal host to host communication 
 	- utlize free threat intel feeds and open source API's
