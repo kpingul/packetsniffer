@@ -22,13 +22,14 @@ var (
 	hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
     	snapshot_len int32  = 1024
     	snapshot_lenPCAPFile uint32  = 1024
-    	promiscuous  bool   = false
+    	promiscuous  bool   = true
     	err          error
-    	timeout      time.Duration = 30 * time.Second
     	handle       *pcap.Handle
     	ethLayer layers.Ethernet
     	ipLayer  layers.IPv4
     	tcpLayer layers.TCP
+    	udpLayer layers.UDP
+    	dnsLayer layers.DNS
 )
 
 func main() {
@@ -103,7 +104,7 @@ func runSniffer(protocol string, port int64) {
 	defer pcapFile.Close()
 
     	// Open device
-	handle, err = pcap.OpenLive(hardCodedVMNIC, snapshot_len, promiscuous, timeout)
+	handle, err = pcap.OpenLive(hardCodedVMNIC, snapshot_len, promiscuous, pcap.BlockForever)
 
 	if err != nil {
 		log.Fatal(err) 
@@ -113,6 +114,7 @@ func runSniffer(protocol string, port int64) {
 
 	// Create filter by combining protocol and port
 	var filter string = strings.ToLower(protocol) + " and port " + strconv.FormatInt(port, 10)
+	fmt.Println(filter)
 
 	// Set filter
 	err = handle.SetBPFFilter(filter)
@@ -135,28 +137,60 @@ func runSniffer(protocol string, port int64) {
 		//instead of creating new structs for every packet which 
 		//takes time and memory. 
 		parser := gopacket.NewDecodingLayerParser(
-	            layers.LayerTypeEthernet,
-	            &ethLayer,
-	            &ipLayer,
-	            &tcpLayer,
+	            	layers.LayerTypeEthernet,
+	            	&ethLayer,
+	            	&ipLayer,
+	            	&tcpLayer,
+	            	&udpLayer,
+	        	&dnsLayer,
 	        )
-	        foundLayerTypes := []gopacket.LayerType{}
 
+	        foundLayerTypes := []gopacket.LayerType{}
 	        err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
 	        if err != nil {
-	            fmt.Println("Trouble decoding layers: ", err)
+	        	//fmt.Println("Trouble decoding layers: ", err)
 	        }
 
 	        for _, layerType := range foundLayerTypes {
-	            if layerType == layers.LayerTypeIPv4 {
-	                fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)
-	            }
-	            // if layerType == layers.LayerTypeTCP {
-	            //     fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
-	            //     fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
-	            // }
+
+	        	//extract ipv4 data
+	        	if layerType == layers.LayerTypeIPv4 {
+	                	fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)
+	            	}
+	            	
+	            	//extract dns data
+	            	if layerType == layers.LayerTypeDNS {
+	            		dnsResponseCode := int(dnsLayer.ResponseCode)
+				dnsANCount := int(dnsLayer.ANCount)
+
+				//check if there is a dns response 
+				if (dnsANCount == 0 && dnsResponseCode > 0) || (dnsANCount > 0) {
+
+					for _, dnsQuestion := range dnsLayer.Questions {
+
+						//domain name --
+						fmt.Println("DOMAIN NAME - " + string(dnsQuestion.Name))
+						
+						//record type
+						fmt.Println("RECORD TYPE - " + dnsQuestion.Type.String())
+						
+						//extract answers
+						if dnsANCount > 0 {
+
+							for _, dnsAnswer := range dnsLayer.Answers {
+								if dnsAnswer.IP.String() != "<nil>" {
+									fmt.Println("DNS Answer: ", dnsAnswer.IP.String())
+								}
+							}
+
+						}
+
+					}
+				}
+	            	}
 	        }	
 	
 	}
 
 }
+

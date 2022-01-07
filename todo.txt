@@ -9,7 +9,8 @@ TODO--
 3.After packet capture, create PCAP file -- DONE
 
 4.Start on threat detection service
-	-extract domains and ip addresses from packet
+	-extract domain from DNS -- done
+	-extract src and dst ip from IPv4 -- done 
 	-research open source threat intel feeds
 		-web scraper?
 		-API's ( rating limit? scheduling mechanism? )
