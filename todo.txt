@@ -12,7 +12,7 @@ TODO--
 	-extract domain from DNS -- done
 	-extract src and dst ip from IPv4 -- done 
 	-storage? where do we store the data? -- done
-	-scheduling mechanism
+	-scheduling mechanism -- DONE
 		-how do we configure sniffer to stop/run on demand
 		-30 seconds? 1 minute? etc.
 	-research open source threat intel feeds

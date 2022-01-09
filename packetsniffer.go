@@ -15,6 +15,8 @@ import(
 	"github.com/google/gopacket/pcapgo"
 	"github.com/urfave/cli/v2"
 	"github.com/asdine/storm/v3"
+	"github.com/jasonlvhit/gocron"
+
 )
 
 //configurations for capture
@@ -47,8 +49,7 @@ type DNSRecord struct {
 
 }
 
-func main() {
-
+func main() {	
 	snifferDB, errDB := storm.Open("sniffer.db")
 	if errDB != nil {
 		log.Fatal(errDB) 
@@ -68,6 +69,7 @@ func main() {
 			&cli.StringFlag{Name: "filepath", Value: "", Usage: "Choose a pcap file to analyze", Required: false,},
 			&cli.StringFlag{Name: "protocol", Value: "", Usage: "TCP/UDP", Required: false,},
 			&cli.StringFlag{Name: "port", Value: "", Usage: "Choose port between 1-65535", Required: false,},
+			&cli.StringFlag{Name: "time", Value: "30", Usage: "Determine how long you want it to run in seconds (min is 30 seconds)", Required: false,},
 		},
 		Action: func(c *cli.Context) error {
 
@@ -81,6 +83,10 @@ func main() {
 		    			valChecks = false 
 		    		}
 		    		if c.String("port") == "" {
+		    			fmt.Println("Invalid port")
+		    			valChecks = false 
+		    		}
+		    		if c.Int64("time") < 30 {
 		    			fmt.Println("Invalid port")
 		    			valChecks = false 
 		    		}
@@ -102,6 +108,14 @@ func main() {
 
 		     	// runif input checks out 
 		     	if valChecks {
+
+		     		//setup scheduler
+		     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
+
+		     		//start scheduler
+		     		gocron.Start()
+
+		     		//run sniffer
 		     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
 		     	} else {
 		     		fmt.Println("stop program..")
@@ -111,6 +125,8 @@ func main() {
 		     	return nil
 	    	},
 	}
+
+
 
 	//Run CLI
 	err := app.Run(os.Args)
@@ -193,6 +209,8 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 	        	//extract ipv4 data
 	        	if layerType == layers.LayerTypeIPv4 {
 	                	
+	                	fmt.Println(ipLayer.DstIP.String())
+
 	                	//create ip record
 	                	record := CreateIPRecord(ipLayer)
 
@@ -240,6 +258,15 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 
 }
 
+
+/* Scheduling */
+func stopSniffer() {
+	fmt.Println("Stopping sniffer..")
+	handle.Close()
+}
+
+
+/* Utility */
 func CreateIPRecord (ipLayer layers.IPv4) IPRecord{
 	return IPRecord{
 		ID: ipLayer.SrcIP.String(),
