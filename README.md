@@ -46,6 +46,10 @@ Protocol either TCP or UDP
 
 Port ranges from 1-65535
 
+#### `--time <int>`
+
+How long (in seconds) to run the sniffer
+
 #### `--help`
 
 Show help
