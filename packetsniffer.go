@@ -283,3 +283,20 @@ func CreateDNSRecord (dnsLayer layers.DNS) DNSRecord{
 		DstIP: ipLayer.DstIP.String(),
 	}
 }
+
+func openPCAPFileAndAnalyze(fileName string) {
+
+	// Open file instead of device
+    	handle, err = pcap.OpenOffline(fileName)
+    	if err != nil { 
+    		log.Fatal(err) 
+    	}
+    	
+    	defer handle.Close()
+
+    	// Loop through packets in file
+    	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+    	for packet := range packetSource.Packets() {
+        		fmt.Println(packet)
+    	}
+}
