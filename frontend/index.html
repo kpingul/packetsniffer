@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+        <head>
+                <meta charset=utf-8 />
+                <meta name="viewport" content="user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+                <style type="text/css">
+                        body { 
+                                font: 14px Roboto, sans-serif;
+                        }
+
+                        #cy {
+                                height: 80%;
+                                width: 80%;
+                                position: absolute;
+                                left: 10%;
+                                top: 40;
+                        }
+                        h1 {
+                                text-align: center;
+                        }
+                </style>
+                <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+        </head>
+        <body>
+                <h1>TRIPWIRE VISUALIZER</h1>
+                <div id="cy"></div>
+                <!-- Load application code at the end to ensure DOM is loaded -->
+                <script>
+
+                        var cy = cytoscape({
+                                container: document.getElementById('cy'),
+                                boxSelectionEnabled: false,
+                                autounselectify: true,
+                                style:  cytoscape.stylesheet()
+                                        .selector('node')
+                                        .style({
+                                                'content': 'data(label)',
+                                                'width': '20',
+                                                'height': '20',
+                                                // 'shape': 'data(shape)',
+                                                'font-size': '11',
+                                                "text-valign": "top",
+                                                "text-halign": "center"
+                                        })
+                                        .selector('edge')
+                                        .style({
+                                                'content': 'data(label)',
+                                                'font-size': '8',
+                                                'curve-style': 'bezier',
+                                                 "edge-text-rotation": "autorotate",
+                                                'target-arrow-shape': 'triangle',
+                                                'width': 2,
+                                                'line-color': '#ddd',
+                                                'target-arrow-color': '#ddd'
+                                        })
+                                        .selector('.highlighted')
+                                        .style({
+                                                'background-color': '#D2042D',
+                                                'line-color': '#B0C4DE ',
+                                                'target-arrow-color': '#B0C4DE ',
+                                                'transition-property': 'background-color, line-color, target-arrow-color',
+                                                'transition-duration': '0.5s'
+                                        }),
+                                        elements: {
+                                                nodes: [ {data: {
+                                                                id: "a",
+                                                                label: "test",
+                                                                shape: "circle",
+                                                        }}],
+                                                edges: []
+                                        },
+
+                                        layout: {
+                                                name: 'breadthfirst',
+                                                directed: true,
+                                                padding: 10
+                                        }
+                                });
+
+                        var bfs = cy.elements().bfs('#a', function(){}, true);
+
+                        var i = 0;
+                        var highlightNextEle = function(){
+                                if( i < bfs.path.length ){
+                                        bfs.path[i].addClass('highlighted');
+                                        i++;
+                                        setTimeout(highlightNextEle, 1000);
+                                }
+                        };
+
+                        
+                </script>
+        </body>
+</html>
+

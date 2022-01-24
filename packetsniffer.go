@@ -297,6 +297,6 @@ func openPCAPFileAndAnalyze(fileName string) {
     	// Loop through packets in file
     	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
     	for packet := range packetSource.Packets() {
-        		fmt.Println(packet)
+        	fmt.Println(packet)
     	}
 }
