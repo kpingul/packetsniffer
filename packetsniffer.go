@@ -66,6 +66,7 @@ func main() {
 			{Name: "KP",},
 		},
 		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "web", Value: "no", Usage: "Enable web server for GUI", Required: false,},
 			&cli.StringFlag{Name: "filepath", Value: "", Usage: "Choose a pcap file to analyze", Required: false,},
 			&cli.StringFlag{Name: "protocol", Value: "", Usage: "TCP/UDP", Required: false,},
 			&cli.StringFlag{Name: "port", Value: "", Usage: "Choose port between 1-65535", Required: false,},
@@ -75,8 +76,13 @@ func main() {
 
 			//flag to check if everything checks out
 			valChecks := true
+			webCheck := false 
 
 		    	//input validation checks
+		    	if (c.String("web") == "yes" ) {
+		    		webCheck = true
+		    	}
+
 		    	if (c.String("filepath") == "" ) {
 		    		if c.String("protocol") == "" {
 		    			fmt.Println("Invalid protocol")
@@ -108,6 +114,10 @@ func main() {
 
 		     	// runif input checks out 
 		     	if valChecks {
+
+		     		if webCheck {
+		     			fmt.Println("RUN WEB SERVER")
+		     		}
 
 		     		//setup scheduler
 		     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
