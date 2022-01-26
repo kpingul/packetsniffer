@@ -22,7 +22,7 @@ import(
 //configurations for capture
 var (
 	timestampLayout = "01-02-2006"
-	hardCodedVMNIC string = "{C602633B-AFB8-4C40-B09A-658A8BC3FA45}"
+	hardCodedVMNIC string = `\\Device\\NPF_{C602633B-AFB8-4C40-B09A-658A8BC3FA45}`
     	snapshot_len int32  = 1024
     	snapshot_lenPCAPFile uint32  = 1024
     	promiscuous  bool   = true
