@@ -325,6 +325,8 @@ func openPCAPFileAndAnalyze(fileName string) {
 }
 
 
+/* DB  Management */
+
 func getRecords(w http.ResponseWriter, req *http.Request) {
 
 	records := getAllEventRecords()
