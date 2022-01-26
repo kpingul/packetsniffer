@@ -9,6 +9,8 @@ import(
 	"strings"
 	"crypto/md5"
     	"encoding/hex"
+    	"net/http"
+  	"encoding/json"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -27,6 +29,8 @@ var (
     	snapshot_lenPCAPFile uint32  = 1024
     	promiscuous  bool   = true
     	err          error
+    	snifferDB *storm.DB
+    	errDB error
     	handle       *pcap.Handle
     	ethLayer layers.Ethernet
     	ipLayer  layers.IPv4
@@ -50,7 +54,7 @@ type DNSRecord struct {
 }
 
 func main() {	
-	snifferDB, errDB := storm.Open("sniffer.db")
+	snifferDB, errDB = storm.Open("sniffer.db")
 	if errDB != nil {
 		log.Fatal(errDB) 
 	}
@@ -116,7 +120,16 @@ func main() {
 		     	if valChecks {
 
 		     		if webCheck {
-		     			fmt.Println("RUN WEB SERVER")
+		     			fmt.Println("RUNNING WEB SERVER")
+		     			//run a web server on a go routine concurrently 
+		     			//or else we will block the the next calls
+		     			go func() {
+			     			//setup http web server and API's
+					    	fileServer := http.FileServer(http.Dir("./frontend")) 
+					    	http.Handle("/", fileServer) 
+						http.HandleFunc("/api/records", getRecords)
+						http.ListenAndServe(":8090", nil)
+		     			}()
 		     		}
 
 		     		//setup scheduler
@@ -309,4 +322,33 @@ func openPCAPFileAndAnalyze(fileName string) {
     	for packet := range packetSource.Packets() {
         	fmt.Println(packet)
     	}
+}
+
+
+func getRecords(w http.ResponseWriter, req *http.Request) {
+
+	records := getAllEventRecords()
+
+	jsonData, err := json.Marshal(records)
+	if err != nil {
+	    log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+   	
+}
+
+
+func getAllEventRecords () []IPRecord{
+
+	var records []IPRecord
+
+	errFetch := snifferDB.All(&records)
+	if errFetch != nil {
+		log.Fatal(errFetch)
+		return records
+	} else {
+		return records
+	}
+
 }
