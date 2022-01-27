@@ -39,6 +39,10 @@ Usage:
 go run packetsniffer.go <flag>
 ```
 
+#### `--web <string>`
+
+Yes/no for web server and GUI
+
 #### `--filepath <path>`
 
 Path to the pcap file to analyze
