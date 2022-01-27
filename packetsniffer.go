@@ -40,13 +40,13 @@ var (
 )
 
 type IPRecord struct {
-  	ID string `storm:"id"`// primary key
+  	ID  int `storm:"id,increment"` // primary key
   	Protocol string 
   	SrcIP string 
   	DstIP string 
 }
 type DNSRecord struct {
-	ID string `storm:"id"`// primary key
+	ID string `storm:"id,increment"`// primary key
   	Domain string 
   	SrcIP string 
   	DstIP string 
@@ -97,7 +97,7 @@ func main() {
 		    			valChecks = false 
 		    		}
 		    		if c.Int64("time") < 30 {
-		    			fmt.Println("Invalid port")
+		    			fmt.Println("Invalid time")
 		    			valChecks = false 
 		    		}
 			    	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
@@ -292,7 +292,6 @@ func stopSniffer() {
 /* Utility */
 func CreateIPRecord (ipLayer layers.IPv4) IPRecord{
 	return IPRecord{
-		ID: ipLayer.SrcIP.String(),
 		Protocol: ipLayer.Protocol.String(),
 		SrcIP: ipLayer.SrcIP.String(),
 		DstIP: ipLayer.DstIP.String(),
@@ -300,7 +299,6 @@ func CreateIPRecord (ipLayer layers.IPv4) IPRecord{
 }
 func CreateDNSRecord (dnsLayer layers.DNS) DNSRecord{
 	return DNSRecord{
-		ID: ipLayer.SrcIP.String(),
 		Domain: ipLayer.Protocol.String(),
 		SrcIP: ipLayer.SrcIP.String(),
 		DstIP: ipLayer.DstIP.String(),
