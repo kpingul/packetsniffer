@@ -7,7 +7,7 @@ Simple and useful sniffer that captures traffic based on given preferences.
 The goal of this project was to extend my knowledge around networking and the significance of packet analysis on the defensive side of things. 
 
 ## Packet Visualizer
-![p_v](https://user-images.githubusercontent.com/11414669/151273640-c2b3056a-5cb6-4d27-8673-4083569b5d16.png)
+![p_v](https://user-images.githubusercontent.com/11414669/151273811-6c73790b-2c2a-4750-9a22-163a5a1c0e22.png)
 
 ## Features
 
