@@ -85,65 +85,62 @@ func main() {
 		    	//input validation checks
 		    	if (c.String("web") == "yes" ) {
 		    		webCheck = true
+		    	} else {
+
+			    	if (c.String("filepath") == "" ) {
+			    		if c.String("protocol") == "" {
+			    			fmt.Println("Invalid protocol")
+			    			valChecks = false 
+			    		}
+			    		if c.String("port") == "" {
+			    			fmt.Println("Invalid port")
+			    			valChecks = false 
+			    		}
+			    		if c.Int64("time") < 30 {
+			    			fmt.Println("Invalid time")
+			    			valChecks = false 
+			    		}
+				    	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
+				     		fmt.Println("Invalid protocol")
+				     		valChecks = false
+				     	}
+
+				     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
+				     		fmt.Println("Invalid port")
+				     		valChecks = false
+				     	} 
+				} else {
+					valChecks = false
+				     	fmt.Println("ANALYZE FILE..")
+
+				}
 		    	}
 
-		    	if (c.String("filepath") == "" ) {
-		    		if c.String("protocol") == "" {
-		    			fmt.Println("Invalid protocol")
-		    			valChecks = false 
-		    		}
-		    		if c.String("port") == "" {
-		    			fmt.Println("Invalid port")
-		    			valChecks = false 
-		    		}
-		    		if c.Int64("time") < 30 {
-		    			fmt.Println("Invalid time")
-		    			valChecks = false 
-		    		}
-			    	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
-			     		fmt.Println("Invalid protocol")
-			     		valChecks = false
+
+		     	// run if input checks out 
+	     		if webCheck {
+	     			fmt.Println("RUNNING WEB SERVER")
+			    	fileServer := http.FileServer(http.Dir("./frontend")) 
+			    	http.Handle("/", fileServer) 
+				http.HandleFunc("/api/records", getRecords)
+				http.ListenAndServe(":8090", nil)
+	     		} else {
+			     	if valChecks {
+
+
+			     		//setup scheduler
+			     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
+
+			     		//start scheduler
+			     		gocron.Start()
+
+			     		//run sniffer
+			     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
+			     	} else {
+			     		fmt.Println("stop program..")
+			     		return nil
 			     	}
-
-			     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
-			     		fmt.Println("Invalid port")
-			     		valChecks = false
-			     	} 
-			} else {
-				valChecks = false
-			     	fmt.Println("ANALYZE FILE..")
-
-			}
-
-
-		     	// runif input checks out 
-		     	if valChecks {
-
-		     		if webCheck {
-		     			fmt.Println("RUNNING WEB SERVER")
-		     			//run a web server on a go routine concurrently 
-		     			//or else we will block the the next calls
-		     			go func() {
-			     			//setup http web server and API's
-					    	fileServer := http.FileServer(http.Dir("./frontend")) 
-					    	http.Handle("/", fileServer) 
-						http.HandleFunc("/api/records", getRecords)
-						http.ListenAndServe(":8090", nil)
-		     			}()
-		     		}
-
-		     		//setup scheduler
-		     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
-
-		     		//start scheduler
-		     		gocron.Start()
-
-		     		//run sniffer
-		     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
-		     	} else {
-		     		fmt.Println("stop program..")
-		     		return nil
-		     	}
+	     		}
 
 		     	return nil
 	    	},
