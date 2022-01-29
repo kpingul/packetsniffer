@@ -29,6 +29,34 @@
                 <!-- Load application code at the end to ensure DOM is loaded -->
                 <script>
 
+                         const API_RECORDS = "http://127.0.0.1:8090/api/records"
+
+                        //create XMLHttpRequest object
+                        const xhr = new XMLHttpRequest()
+
+                        //open a get request with the remote server URL
+                        xhr.open("GET", API_RECORDS)
+                        
+                        //send the Http request
+                        xhr.send()
+
+                        //EVENT HANDLERS
+                        //triggered when the response is completed
+                        xhr.onload = function() {
+                                if (xhr.status === 200) {
+                                        //parse JSON data
+                                        data = JSON.parse(xhr.responseText)
+                                        console.log(data)
+                                } else if (xhr.status === 404) {
+                                        console.log("No records found")
+                                }
+                        }
+
+                        //triggered when a network-level error occurs with the request
+                        xhr.onerror = function() {
+                                console.log("Network error occurred")
+                        }
+
                         var cy = cytoscape({
                                 container: document.getElementById('cy'),
                                 boxSelectionEnabled: false,
