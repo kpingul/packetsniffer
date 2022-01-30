@@ -44,9 +44,105 @@
                         //triggered when the response is completed
                         xhr.onload = function() {
                                 if (xhr.status === 200) {
+                                        var     nodes = [],
+                                                edges = [];
+
                                         //parse JSON data
                                         data = JSON.parse(xhr.responseText)
                                         console.log(data)
+
+
+                                        if ( data.length > 0 ) {
+                                                var     nodesObj = {},
+                                                        nodes = [],
+                                                        edges = [];
+
+                                                data.forEach( (node, idx) => {
+                                                        if ( !nodesObj.hasOwnProperty(node.SrcIP) ) {
+                                                                console.log("SRCIP")
+                                                                nodesObj[node.SrcIP] = {
+                                                                        data: {
+                                                                                id: node.ID,
+                                                                                label: node.SrcIP,
+                                                                                shape: "circle"
+                                                                        }
+                                                                }
+
+                                                        }
+                                                        if ( !nodesObj.hasOwnProperty(node.DstIP) ) {
+                                                                console.log("DSTIP")
+                                                                nodesObj[node.DstIP] = {
+                                                                        data: {
+                                                                                id: node.ID,
+                                                                                label: node.DstIP,
+                                                                                shape: "circle"
+                                                                        }
+                                                                }
+
+                                                        }
+                                                })
+                                                
+                                                Object.keys(nodesObj).forEach( (key, val) => {
+                                                        nodes.push(nodesObj[key])
+                                                })
+                                                var cy = cytoscape({
+                                                        container: document.getElementById('cy'),
+                                                        boxSelectionEnabled: false,
+                                                        autounselectify: true,
+                                                        style:  cytoscape.stylesheet()
+                                                                .selector('node')
+                                                                .style({
+                                                                        'content': 'data(label)',
+                                                                        'width': '20',
+                                                                        'height': '20',
+                                                                        // 'shape': 'data(shape)',
+                                                                        'font-size': '11',
+                                                                        "text-valign": "top",
+                                                                        "text-halign": "center"
+                                                                })
+                                                                .selector('edge')
+                                                                .style({
+                                                                        'content': 'data(label)',
+                                                                        'font-size': '8',
+                                                                        'curve-style': 'bezier',
+                                                                         "edge-text-rotation": "autorotate",
+                                                                        'target-arrow-shape': 'triangle',
+                                                                        'width': 2,
+                                                                        'line-color': '#ddd',
+                                                                        'target-arrow-color': '#ddd'
+                                                                })
+                                                                .selector('.highlighted')
+                                                                .style({
+                                                                        'background-color': '#D2042D',
+                                                                        'line-color': '#B0C4DE ',
+                                                                        'target-arrow-color': '#B0C4DE ',
+                                                                        'transition-property': 'background-color, line-color, target-arrow-color',
+                                                                        'transition-duration': '0.5s'
+                                                                }),
+                                                                elements: {
+                                                                        nodes: nodes,
+                                                                        edges: []
+                                                                },
+
+                                                                layout: {
+                                                                        name: 'breadthfirst',
+                                                                        directed: true,
+                                                                        padding: 10
+                                                                }
+                                                        });
+
+                                                var bfs = cy.elements().bfs('#a', function(){}, true);
+
+                                                var i = 0;
+                                                var highlightNextEle = function(){
+                                                        if( i < bfs.path.length ){
+                                                                bfs.path[i].addClass('highlighted');
+                                                                i++;
+                                                                setTimeout(highlightNextEle, 1000);
+                                                        }
+                                                };
+                                                console.log(nodes)
+                                        }
                                 } else if (xhr.status === 404) {
                                         console.log("No records found")
                                 }
@@ -57,66 +153,17 @@
                                 console.log("Network error occurred")
                         }
 
-                        var cy = cytoscape({
-                                container: document.getElementById('cy'),
-                                boxSelectionEnabled: false,
-                                autounselectify: true,
-                                style:  cytoscape.stylesheet()
-                                        .selector('node')
-                                        .style({
-                                                'content': 'data(label)',
-                                                'width': '20',
-                                                'height': '20',
-                                                // 'shape': 'data(shape)',
-                                                'font-size': '11',
-                                                "text-valign": "top",
-                                                "text-halign": "center"
-                                        })
-                                        .selector('edge')
-                                        .style({
-                                                'content': 'data(label)',
-                                                'font-size': '8',
-                                                'curve-style': 'bezier',
-                                                 "edge-text-rotation": "autorotate",
-                                                'target-arrow-shape': 'triangle',
-                                                'width': 2,
-                                                'line-color': '#ddd',
-                                                'target-arrow-color': '#ddd'
-                                        })
-                                        .selector('.highlighted')
-                                        .style({
-                                                'background-color': '#D2042D',
-                                                'line-color': '#B0C4DE ',
-                                                'target-arrow-color': '#B0C4DE ',
-                                                'transition-property': 'background-color, line-color, target-arrow-color',
-                                                'transition-duration': '0.5s'
-                                        }),
-                                        elements: {
-                                                nodes: [ {data: {
-                                                                id: "a",
-                                                                label: "test",
-                                                                shape: "circle",
-                                                        }}],
-                                                edges: []
-                                        },
 
-                                        layout: {
-                                                name: 'breadthfirst',
-                                                directed: true,
-                                                padding: 10
+
+                        function createNode ( node ) {
+                                return {
+                                        data: {
+                                                id: node.ID,
+                                                label: node.SrcIP,
+                                                shape: "circle",
                                         }
-                                });
-
-                        var bfs = cy.elements().bfs('#a', function(){}, true);
-
-                        var i = 0;
-                        var highlightNextEle = function(){
-                                if( i < bfs.path.length ){
-                                        bfs.path[i].addClass('highlighted');
-                                        i++;
-                                        setTimeout(highlightNextEle, 1000);
                                 }
-                        };
+                        }
 
                         
                 </script>
