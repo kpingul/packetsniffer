@@ -24,6 +24,6 @@ TODO--
 			-https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en
 
 5.Add visualizations for captured traffic using cytoscape.js
-	-create mockup for now..
+6.Add cyber map using maxmind for geolocation information on IP addresses
 	
 
