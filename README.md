@@ -9,7 +9,7 @@ The goal of this project was to extend my knowledge around networking and the si
 ## Packet Visualizer
 This feature was inspired by the Logontracer project by JPCERTCC. In this example, we're showing some some outbound traffic on a host. Eventually, we will be able to show more packet data like protocols, payload information, packet length, TTL, etc.  
 
-![packet-sniffer](https://user-images.githubusercontent.com/11414669/152470315-bd76dd0d-4cf3-4918-b030-d4a6421edc1c.png)
+![packet-sniffer](https://user-images.githubusercontent.com/11414669/152470412-a439d004-1a70-4fc4-982d-ca3ba90c4f41.png)
 
 ## Features
 
