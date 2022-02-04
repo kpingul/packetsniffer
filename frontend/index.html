@@ -44,37 +44,46 @@
                         //triggered when the response is completed
                         xhr.onload = function() {
                                 if (xhr.status === 200) {
-                                        var     nodes = [],
-                                                edges = [];
 
                                         //parse JSON data
                                         data = JSON.parse(xhr.responseText)
                                         console.log(data)
 
-
                                         if ( data.length > 0 ) {
-                                                var     nodesObj = {},
+
+                                                //setting our cytoscape 
+                                                //variables
+                                                var     nodes = [],
+                                                        nodesObj = {},
                                                         nodes = [],
+                                                        edgesObj = {},
                                                         edges = [];
 
+
+                                                //creates a nodes object to
+                                                //keep track of duplication
+                                                //**should move to server side
+                                                //to prevent performance issues
                                                 data.forEach( (node, idx) => {
                                                         if ( !nodesObj.hasOwnProperty(node.SrcIP) ) {
-                                                                console.log("SRCIP")
                                                                 nodesObj[node.SrcIP] = {
                                                                         data: {
-                                                                                id: node.ID,
+                                                                                id: node.SrcIP,
                                                                                 label: node.SrcIP,
+                                                                                srcIP: node.SrcIP,
+                                                                                dstIP: node.DstIP,
                                                                                 shape: "circle"
                                                                         }
                                                                 }
 
                                                         }
                                                         if ( !nodesObj.hasOwnProperty(node.DstIP) ) {
-                                                                console.log("DSTIP")
                                                                 nodesObj[node.DstIP] = {
                                                                         data: {
-                                                                                id: node.ID,
+                                                                                id: node.DstIP,
                                                                                 label: node.DstIP,
+                                                                                srcIP: node.SrcIP,
+                                                                                dstIP: node.DstIP,
                                                                                 shape: "circle"
                                                                         }
                                                                 }
@@ -82,9 +91,26 @@
                                                         }
                                                 })
                                                 
+                                                //store all our unique nodes into the nodes variable                                                
                                                 Object.keys(nodesObj).forEach( (key, val) => {
                                                         nodes.push(nodesObj[key])
                                                 })
+
+
+                                                //creates our edges/links 
+                                                nodes.forEach( (node,idx) => {
+                                                        edges.push({
+                                                                data: {
+                                                                        id: node.data.srcIP + "-" + node.data.dstIP,
+                                                                        source: node.data.srcIP,
+                                                                        target: node.data.dstIP,
+                                                                        label: ""
+                                                                }
+                                                        })
+                                                })
+
+
+                                                //init cytoscape library and pass in our live data
                                                 var cy = cytoscape({
                                                         container: document.getElementById('cy'),
                                                         boxSelectionEnabled: false,
@@ -119,17 +145,17 @@
                                                                         'transition-property': 'background-color, line-color, target-arrow-color',
                                                                         'transition-duration': '0.5s'
                                                                 }),
-                                                                elements: {
-                                                                        nodes: nodes,
-                                                                        edges: []
-                                                                },
+                                                        elements: {
+                                                                nodes: nodes,
+                                                                edges: edges
+                                                        },
 
-                                                                layout: {
-                                                                        name: 'breadthfirst',
-                                                                        directed: true,
-                                                                        padding: 10
-                                                                }
-                                                        });
+                                                        layout: {
+                                                                name: 'breadthfirst',
+                                                                directed: true,
+                                                                padding: 10
+                                                        }
+                                                });
 
                                                 var bfs = cy.elements().bfs('#a', function(){}, true);
 
@@ -141,7 +167,7 @@
                                                                 setTimeout(highlightNextEle, 1000);
                                                         }
                                                 };
-                                                console.log(nodes)
+                                                
                                         }
                                 } else if (xhr.status === 404) {
                                         console.log("No records found")
@@ -152,7 +178,6 @@
                         xhr.onerror = function() {
                                 console.log("Network error occurred")
                         }
-
 
 
                         function createNode ( node ) {
