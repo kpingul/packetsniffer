@@ -24,5 +24,8 @@ TODO--
 			-https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en
 
 5.Add visualizations for captured traffic using cytoscape.js --done
+
+6.Add capability to upload pcap files
+	-use a pcap example from malware analysis and update the visualizer to showcase a real world attack using this tool. 
 	
 
