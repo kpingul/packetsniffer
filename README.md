@@ -7,7 +7,7 @@ Simple and useful sniffer that captures traffic based on given preferences.
 The goal of this project was to extend my knowledge around networking and the significance of packet analysis on the defensive side of things. 
 
 ## Packet Visualizer
-This feature was inspired by the Logontracer project by JPCERTCC. In this example, we're showing some some outbound traffic on a host. Eventually, we will be able to show more packet data like protocols, payload information, packet length, TTL, etc.  
+This feature was inspired by the Logontracer project by JPCERTCC. In this example, we're showing some outbound traffic on a host. Eventually, we will be able to show more packet data like protocols, payload information, packet length, TTL, etc. And in the future, we will add an option where you can upload pcap files and will utilize this visualizer to show network activity. 
 
 ![packet-sniffer](https://user-images.githubusercontent.com/11414669/152470412-a439d004-1a70-4fc4-982d-ca3ba90c4f41.png)
 
