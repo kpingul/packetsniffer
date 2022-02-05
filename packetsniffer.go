@@ -315,7 +315,69 @@ func openPCAPFileAndAnalyze(fileName string) {
     	// Loop through packets in file
     	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
     	for packet := range packetSource.Packets() {
-        	fmt.Println(packet)
+        	
+		//use existing structures to store the packet information 
+		//instead of creating new structs for every packet which 
+		//takes time and memory. 
+		parser := gopacket.NewDecodingLayerParser(
+	            	layers.LayerTypeEthernet,
+	            	&ethLayer,
+	            	&ipLayer,
+	            	&tcpLayer,
+	            	&udpLayer,
+	        	&dnsLayer,
+	        )
+
+	        foundLayerTypes := []gopacket.LayerType{}
+	        err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
+	        if err != nil {
+	        	//fmt.Println("Trouble decoding layers: ", err)
+	        }
+
+	        for _, layerType := range foundLayerTypes {
+
+	        	//extract ipv4 data
+	        	if layerType == layers.LayerTypeIPv4 {
+	                	
+	                	fmt.Println(ipLayer.DstIP.String())
+
+	                	//create ip record
+	                	record := CreateIPRecord(ipLayer)
+	                	fmt.Println(record)
+
+	            	}
+	            	
+	            	//extract dns data
+	            	if layerType == layers.LayerTypeDNS {
+	            		dnsResponseCode := int(dnsLayer.ResponseCode)
+				dnsANCount := int(dnsLayer.ANCount)
+
+				//check if there is a dns response 
+				if (dnsANCount == 0 && dnsResponseCode > 0) || (dnsANCount > 0) {
+
+					for _, dnsQuestion := range dnsLayer.Questions {
+
+						//domain name --
+						fmt.Println("DOMAIN NAME - " + string(dnsQuestion.Name))
+						
+						//record type
+						fmt.Println("RECORD TYPE - " + dnsQuestion.Type.String())
+
+						//extract answers
+						if dnsANCount > 0 {
+
+							for _, dnsAnswer := range dnsLayer.Answers {
+								if dnsAnswer.IP.String() != "<nil>" {
+									fmt.Println("DNS Answer: ", dnsAnswer.IP.String())
+								}
+							}
+
+						}
+
+					}
+				}
+	            	}
+	        }	
     	}
 }
 
