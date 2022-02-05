@@ -224,6 +224,21 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 	        	//fmt.Println("Trouble decoding layers: ", err)
 	        }
 
+
+	        // Application layer contains things like HTTP
+	        //FTP, SMTP, etc..
+	    	applicationLayer := packet.ApplicationLayer()
+	    	if applicationLayer != nil {
+	        	fmt.Println("Application layer/Payload found.")
+	        	fmt.Printf("%s\n", applicationLayer.Payload())
+
+	        	// Search for a protocols inside the payload
+	        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
+	            		fmt.Println("HTTP found!")
+	        	}
+	    	}
+
+
 	        for _, layerType := range foundLayerTypes {
 
 	        	//extract ipv4 data
@@ -333,6 +348,20 @@ func openPCAPFileAndAnalyze(fileName string) {
 	        if err != nil {
 	        	//fmt.Println("Trouble decoding layers: ", err)
 	        }
+
+	      	// Application layer contains things like HTTP
+	        //FTP, SMTP, etc..
+	    	applicationLayer := packet.ApplicationLayer()
+	    	if applicationLayer != nil {
+	        	fmt.Println("Application layer/Payload found.")
+	        	fmt.Printf("%s\n", applicationLayer.Payload())
+
+	        	// Search for a protocols inside the payload
+	        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
+	            		fmt.Println("HTTP found!")
+	        	}
+	    	}
+
 
 	        for _, layerType := range foundLayerTypes {
 
