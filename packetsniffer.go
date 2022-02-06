@@ -225,19 +225,6 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 	        }
 
 
-	        // Application layer contains things like HTTP
-	        //FTP, SMTP, etc..
-	    	applicationLayer := packet.ApplicationLayer()
-	    	if applicationLayer != nil {
-	        	fmt.Println("Application layer/Payload found.")
-	        	fmt.Printf("%s\n", applicationLayer.Payload())
-
-	        	// Search for a protocols inside the payload
-	        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
-	            		fmt.Println("HTTP found!")
-	        	}
-	    	}
-
 
 	        for _, layerType := range foundLayerTypes {
 
@@ -256,6 +243,25 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 				}
 
 	            	}
+
+	            	//extract tcp data
+	            	if layerType == layers.LayerTypeTCP {
+		                fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
+		                fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+
+			        // Application layer contains things like HTTP
+			        //FTP, SMTP, etc..
+			    	applicationLayer := packet.ApplicationLayer()
+			    	if applicationLayer != nil {
+			        	fmt.Println("Application layer/Payload found.")
+			        	fmt.Printf("%s\n", applicationLayer.Payload())
+
+			        	// Search for a protocols inside the payload
+			        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
+			            		fmt.Println("HTTP found!")
+			        	}
+			    	}
+		        }
 	            	
 	            	//extract dns data
 	            	if layerType == layers.LayerTypeDNS {
@@ -349,19 +355,6 @@ func openPCAPFileAndAnalyze(fileName string) {
 	        	//fmt.Println("Trouble decoding layers: ", err)
 	        }
 
-	      	// Application layer contains things like HTTP
-	        //FTP, SMTP, etc..
-	    	applicationLayer := packet.ApplicationLayer()
-	    	if applicationLayer != nil {
-	        	fmt.Println("Application layer/Payload found.")
-	        	fmt.Printf("%s\n", applicationLayer.Payload())
-
-	        	// Search for a protocols inside the payload
-	        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
-	            		fmt.Println("HTTP found!")
-	        	}
-	    	}
-
 
 	        for _, layerType := range foundLayerTypes {
 
@@ -375,6 +368,25 @@ func openPCAPFileAndAnalyze(fileName string) {
 	                	fmt.Println(record)
 
 	            	}
+
+	            	//extract tcp data
+	            	if layerType == layers.LayerTypeTCP {
+		                fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
+		                fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+
+			        // Application layer contains things like HTTP
+			        //FTP, SMTP, etc..
+			    	applicationLayer := packet.ApplicationLayer()
+			    	if applicationLayer != nil {
+			        	fmt.Println("Application layer/Payload found.")
+			        	fmt.Printf("%s\n", applicationLayer.Payload())
+
+			        	// Search for a protocols inside the payload
+			        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
+			            		fmt.Println("HTTP found!")
+			        	}
+			    	}
+		        }
 	            	
 	            	//extract dns data
 	            	if layerType == layers.LayerTypeDNS {
