@@ -39,11 +39,12 @@ var (
     	dnsLayer layers.DNS
 )
 
-type IPRecord struct {
+type Record struct {
   	ID  int `storm:"id,increment"` // primary key
   	Protocol string 
   	SrcIP string 
   	DstIP string 
+  	Payload string
 }
 type DNSRecord struct {
 	ID string `storm:"id,increment"`// primary key
@@ -233,8 +234,8 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 	                	
 	                	fmt.Println(ipLayer.DstIP.String())
 
-	                	//create ip record
-	                	record := CreateIPRecord(ipLayer)
+	                	//create record
+	                	record := CreateRecord(ipLayer)
 
 	                	//store in db
 				errSave := snifferDB.Save(&record)
@@ -258,7 +259,19 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 
 			        	// Search for a protocols inside the payload
 			        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
-			            		fmt.Println("HTTP found!")
+			            		//create record
+	                			record := Record{
+							Protocol: "HTTP",
+							SrcIP: ipLayer.SrcIP.String(),
+							DstIP: ipLayer.DstIP.String(),
+							Payload: string(applicationLayer.Payload()),
+						}
+
+						//store in db
+						errSave := snifferDB.Save(&record)
+						if errSave != nil {
+							log.Fatal(errSave)
+						}
 			        	}
 			    	}
 		        }
@@ -308,8 +321,8 @@ func stopSniffer() {
 
 
 /* Utility */
-func CreateIPRecord (ipLayer layers.IPv4) IPRecord{
-	return IPRecord{
+func CreateRecord (ipLayer layers.IPv4) Record{
+	return Record{
 		Protocol: ipLayer.Protocol.String(),
 		SrcIP: ipLayer.SrcIP.String(),
 		DstIP: ipLayer.DstIP.String(),
@@ -363,8 +376,8 @@ func openPCAPFileAndAnalyze(fileName string) {
 	                	
 	                	fmt.Println(ipLayer.DstIP.String())
 
-	                	//create ip record
-	                	record := CreateIPRecord(ipLayer)
+	                	//create record
+	                	record := CreateRecord(ipLayer)
 	                	fmt.Println(record)
 
 	            	}
@@ -439,9 +452,9 @@ func getRecords(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func getAllEventRecords () []IPRecord{
+func getAllEventRecords () []Record{
 
-	var records []IPRecord
+	var records []Record
 
 	errFetch := snifferDB.All(&records)
 	if errFetch != nil {
