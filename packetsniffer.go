@@ -258,21 +258,40 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 			        	fmt.Printf("%s\n", applicationLayer.Payload())
 
 			        	// Search for a protocols inside the payload
-			        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
-			            		//create record
-	                			record := Record{
-							Protocol: "HTTP",
-							SrcIP: ipLayer.SrcIP.String(),
-							DstIP: ipLayer.DstIP.String(),
-							Payload: string(applicationLayer.Payload()),
-						}
+			        	switch true {
+				        	case strings.Contains(string(applicationLayer.Payload()), "HTTP"):
+				            		//create record
+		                			record := Record{
+								Protocol: "HTTP",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
 
-						//store in db
-						errSave := snifferDB.Save(&record)
-						if errSave != nil {
-							log.Fatal(errSave)
-						}
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}
+
+				        	case strings.Contains(string(applicationLayer.Payload()), "FTP"):
+				            		//create record
+		                			record := Record{
+								Protocol: "FTP",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
+
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}
+				        	
+				        	default:
 			        	}
+
 			    	}
 		        }
 	            	
@@ -395,8 +414,38 @@ func openPCAPFileAndAnalyze(fileName string) {
 			        	fmt.Printf("%s\n", applicationLayer.Payload())
 
 			        	// Search for a protocols inside the payload
-			        	if strings.Contains(string(applicationLayer.Payload()), "HTTP") {
-			            		fmt.Println("HTTP found!")
+			        	switch true {
+				        	case strings.Contains(string(applicationLayer.Payload()), "HTTP"):
+				            		//create record
+		                			record := Record{
+								Protocol: "HTTP",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
+
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}
+
+				        	case strings.Contains(string(applicationLayer.Payload()), "FTP"):
+				            		//create record
+		                			record := Record{
+								Protocol: "FTP",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
+
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}
+				        	
+				        	default:
 			        	}
 			    	}
 		        }
