@@ -288,6 +288,21 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							if errSave != nil {
 								log.Fatal(errSave)
 							}
+						case strings.Contains(string(applicationLayer.Payload()), "TELNET"):
+				            		//create record
+		                			record := Record{
+								Protocol: "TELNET",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
+
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}
+				        	
 				        	
 				        	default:
 			        	}
@@ -434,6 +449,20 @@ func openPCAPFileAndAnalyze(fileName string) {
 				            		//create record
 		                			record := Record{
 								Protocol: "FTP",
+								SrcIP: ipLayer.SrcIP.String(),
+								DstIP: ipLayer.DstIP.String(),
+								Payload: string(applicationLayer.Payload()),
+							}
+
+							//store in db
+							errSave := snifferDB.Save(&record)
+							if errSave != nil {
+								log.Fatal(errSave)
+							}	
+						case strings.Contains(string(applicationLayer.Payload()), "TELNET"):
+				            		//create record
+		                			record := Record{
+								Protocol: "TELNET",
 								SrcIP: ipLayer.SrcIP.String(),
 								DstIP: ipLayer.DstIP.String(),
 								Payload: string(applicationLayer.Payload()),
