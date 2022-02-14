@@ -22,8 +22,8 @@ TODO--
 6.Store application layer data to the db 
 	-HTTP - DONE
 	-SNMP
-	-FTP
-	-TELNET
+	-FTP - DONE
+	-TELNET - DONE
 	-DCHP
 
 7.Add capability to upload pcap files
