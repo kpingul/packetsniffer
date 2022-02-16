@@ -17,7 +17,7 @@ import(
 	"github.com/google/gopacket/pcapgo"
 	"github.com/urfave/cli/v2"
 	"github.com/asdine/storm/v3"
-	"github.com/jasonlvhit/gocron"
+	// "github.com/jasonlvhit/gocron"
 
 )
 
@@ -62,6 +62,9 @@ func main() {
 
 	defer snifferDB.Close()
 
+
+	openPCAPFileAndAnalyze("./pcap-02-14-2022-fc86f052f109884f2cb8a8b2c5153da0.pcap")
+
 	//Initial CLI App Setup
 	app := &cli.App{
 		Name:        "Packet Sniffer",
@@ -80,68 +83,68 @@ func main() {
 		Action: func(c *cli.Context) error {
 
 			//flag to check if everything checks out
-			valChecks := true
-			webCheck := false 
+			// valChecks := true
+			// webCheck := false 
 
 		    	//input validation checks
-		    	if (c.String("web") == "yes" ) {
-		    		webCheck = true
-		    	} else {
+		  //   	if (c.String("web") == "yes" ) {
+		  //   		webCheck = true
+		  //   	} else {
 
-			    	if (c.String("filepath") == "" ) {
-			    		if c.String("protocol") == "" {
-			    			fmt.Println("Invalid protocol")
-			    			valChecks = false 
-			    		}
-			    		if c.String("port") == "" {
-			    			fmt.Println("Invalid port")
-			    			valChecks = false 
-			    		}
-			    		if c.Int64("time") < 30 {
-			    			fmt.Println("Invalid time")
-			    			valChecks = false 
-			    		}
-				    	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
-				     		fmt.Println("Invalid protocol")
-				     		valChecks = false
-				     	}
+			 //    	if (c.String("filepath") == "" ) {
+			 //    		if c.String("protocol") == "" {
+			 //    			fmt.Println("Invalid protocol")
+			 //    			valChecks = false 
+			 //    		}
+			 //    		if c.String("port") == "" {
+			 //    			fmt.Println("Invalid port")
+			 //    			valChecks = false 
+			 //    		}
+			 //    		if c.Int64("time") < 30 {
+			 //    			fmt.Println("Invalid time")
+			 //    			valChecks = false 
+			 //    		}
+				//     	if strings.ToLower(c.String("protocol")) != "tcp" && strings.ToLower(c.String("protocol")) != "udp" {
+				//      		fmt.Println("Invalid protocol")
+				//      		valChecks = false
+				//      	}
 
-				     	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
-				     		fmt.Println("Invalid port")
-				     		valChecks = false
-				     	} 
-				} else {
-					valChecks = false
-				     	fmt.Println("ANALYZE FILE..")
+				//      	if c.Int64("port") <= 0 || c.Int64("port") > 65535 {
+				//      		fmt.Println("Invalid port")
+				//      		valChecks = false
+				//      	} 
+				// } else {
+				// 	valChecks = false
+				//      	fmt.Println("ANALYZE FILE..")
 
-				}
-		    	}
-
-
-		     	// run if input checks out 
-	     		if webCheck {
-	     			fmt.Println("RUNNING WEB SERVER")
-			    	fileServer := http.FileServer(http.Dir("./frontend")) 
-			    	http.Handle("/", fileServer) 
-				http.HandleFunc("/api/records", getRecords)
-				http.ListenAndServe(":8090", nil)
-	     		} else {
-			     	if valChecks {
+				// }
+		  //   	}
 
 
-			     		//setup scheduler
-			     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
+		  //    	// run if input checks out 
+	   //   		if webCheck {
+	   //   			fmt.Println("RUNNING WEB SERVER")
+			 //    	fileServer := http.FileServer(http.Dir("./frontend")) 
+			 //    	http.Handle("/", fileServer) 
+				// http.HandleFunc("/api/records", getRecords)
+				// http.ListenAndServe(":8090", nil)
+	   //   		} else {
+			 //     	if valChecks {
 
-			     		//start scheduler
-			     		gocron.Start()
 
-			     		//run sniffer
-			     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
-			     	} else {
-			     		fmt.Println("stop program..")
-			     		return nil
-			     	}
-	     		}
+			 //     		//setup scheduler
+			 //     		gocron.Every(c.Uint64("time")).Second().Do(stopSniffer)
+
+			 //     		//start scheduler
+			 //     		gocron.Start()
+
+			 //     		//run sniffer
+			 //     		runSniffer(snifferDB, c.String("protocol"), c.Int64("port"))
+			 //     	} else {
+			 //     		fmt.Println("stop program..")
+			 //     		return nil
+			 //     	}
+	   //   		}
 
 		     	return nil
 	    	},
@@ -373,14 +376,28 @@ func parseHTTPHeader(header string) {
 
 	//find a way to parse http headers consistently 
 	//and create a struct to represent each of those fields
-	//ideas ----
-	//using str := strings.Split(strings.TrimSpace(h), ": ")
-	//we can parse  
 	//Host: test.com
 	//Connection: keep alive
 	//Accept-Encoding: gzip,deflate etc..
 	//Problem we run into is the type of HTTP request for example:
 	//GET /HTTP/1.1 or POST /HTTP/1.1 etc..
+	parsedHeader := strings.Split(header, "\n")
+	httpMap := make(map[string]string)
+
+	for i := 0; i < len(parsedHeader); i++ {
+		if strings.Contains(parsedHeader[i], "HTTP/") {
+			httpMap["Type"] = parsedHeader[i]
+		} else {
+			fields := strings.Split(parsedHeader[i], ": ")
+			if len(fields) > 1 {
+				httpMap[fields[0]] = fields[1]
+			}
+
+		}
+	}
+
+	fmt.Println(httpMap)
+
 
 
 }
@@ -423,71 +440,72 @@ func openPCAPFileAndAnalyze(fileName string) {
 	        	//extract ipv4 data
 	        	if layerType == layers.LayerTypeIPv4 {
 	                	
-	                	fmt.Println(ipLayer.DstIP.String())
+	                	// fmt.Println(ipLayer.DstIP.String())
 
 	                	//create record
-	                	record := CreateRecord(ipLayer)
-	                	fmt.Println(record)
+	                	// record := CreateRecord(ipLayer)
+	                	// fmt.Println(record)
 
 	            	}
 
 	            	//extract tcp data
 	            	if layerType == layers.LayerTypeTCP {
-		                fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
-		                fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+		                // fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
+		                // fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
 
 			        // Application layer contains things like HTTP
 			        //FTP, SMTP, etc..
 			    	applicationLayer := packet.ApplicationLayer()
 			    	if applicationLayer != nil {
 			        	fmt.Println("Application layer/Payload found.")
-			        	fmt.Printf("%s\n", applicationLayer.Payload())
+			        	// fmt.Printf("%s\n", applicationLayer.Payload())
 
 			        	// Search for a protocols inside the payload
 			        	switch true {
 				        	case strings.Contains(string(applicationLayer.Payload()), "HTTP"):
+				        		parseHTTPHeader(string(applicationLayer.Payload()))
 				            		//create record
-		                			record := Record{
-								Protocol: "HTTP",
-								SrcIP: ipLayer.SrcIP.String(),
-								DstIP: ipLayer.DstIP.String(),
-								Payload: string(applicationLayer.Payload()),
-							}
+		     //            			record := Record{
+							// 	Protocol: "HTTP",
+							// 	SrcIP: ipLayer.SrcIP.String(),
+							// 	DstIP: ipLayer.DstIP.String(),
+							// 	Payload: string(applicationLayer.Payload()),
+							// }
 
-							//store in db
-							errSave := snifferDB.Save(&record)
-							if errSave != nil {
-								log.Fatal(errSave)
-							}
+							// //store in db
+							// errSave := snifferDB.Save(&record)
+							// if errSave != nil {
+							// 	log.Fatal(errSave)
+							// }
 
 				        	case strings.Contains(string(applicationLayer.Payload()), "FTP"):
 				            		//create record
-		                			record := Record{
-								Protocol: "FTP",
-								SrcIP: ipLayer.SrcIP.String(),
-								DstIP: ipLayer.DstIP.String(),
-								Payload: string(applicationLayer.Payload()),
-							}
+		     //            			record := Record{
+							// 	Protocol: "FTP",
+							// 	SrcIP: ipLayer.SrcIP.String(),
+							// 	DstIP: ipLayer.DstIP.String(),
+							// 	Payload: string(applicationLayer.Payload()),
+							// }
 
-							//store in db
-							errSave := snifferDB.Save(&record)
-							if errSave != nil {
-								log.Fatal(errSave)
-							}	
+							// //store in db
+							// errSave := snifferDB.Save(&record)
+							// if errSave != nil {
+							// 	log.Fatal(errSave)
+							// }	
 						case strings.Contains(string(applicationLayer.Payload()), "TELNET"):
 				            		//create record
-		                			record := Record{
-								Protocol: "TELNET",
-								SrcIP: ipLayer.SrcIP.String(),
-								DstIP: ipLayer.DstIP.String(),
-								Payload: string(applicationLayer.Payload()),
-							}
+		     //            			record := Record{
+							// 	Protocol: "TELNET",
+							// 	SrcIP: ipLayer.SrcIP.String(),
+							// 	DstIP: ipLayer.DstIP.String(),
+							// 	Payload: string(applicationLayer.Payload()),
+							// }
 
-							//store in db
-							errSave := snifferDB.Save(&record)
-							if errSave != nil {
-								log.Fatal(errSave)
-							}
+							// //store in db
+							// errSave := snifferDB.Save(&record)
+							// if errSave != nil {
+							// 	log.Fatal(errSave)
+							// }
 				        	
 				        	default:
 			        	}
