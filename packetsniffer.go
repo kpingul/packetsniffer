@@ -266,6 +266,7 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 								SrcIP: ipLayer.SrcIP.String(),
 								DstIP: ipLayer.DstIP.String(),
 								Payload: string(applicationLayer.Payload()),
+								HTTPHeader: parseHTTPHeader(string(applicationLayer.Payload())),
 							}
 
 							//store in db
@@ -383,9 +384,9 @@ func parseHTTPHeader(header string) map[string]string {
 
 	for i := 0; i < len(parsedHeader); i++ {
 		if strings.Contains(parsedHeader[i], "HTTP/") {
-			httpMap["Type"] = parsedHeader[i]
+			httpMap["Type"] = strings.TrimSpace(parsedHeader[i])
 		} else {
-			fields := strings.Split(parsedHeader[i], ": ")
+			fields := strings.Split(strings.TrimSpace(parsedHeader[i]), ": ")
 			if len(fields) > 1 {
 				httpMap[fields[0]] = fields[1]
 			}
