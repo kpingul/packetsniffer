@@ -369,6 +369,21 @@ func CreateDNSRecord (dnsLayer layers.DNS) DNSRecord{
 		DstIP: ipLayer.DstIP.String(),
 	}
 }
+func parseHTTPHeader(header string) {
+
+	//find a way to parse http headers consistently 
+	//and create a struct to represent each of those fields
+	//ideas ----
+	//using str := strings.Split(strings.TrimSpace(h), ": ")
+	//we can parse  
+	//Host: test.com
+	//Connection: keep alive
+	//Accept-Encoding: gzip,deflate etc..
+	//Problem we run into is the type of HTTP request for example:
+	//GET /HTTP/1.1 or POST /HTTP/1.1 etc..
+
+
+}
 
 func openPCAPFileAndAnalyze(fileName string) {
 
