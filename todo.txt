@@ -24,7 +24,7 @@ TODO--
 	-FTP - DONE
 	-TELNET - DONE
 
-7.Parse HTTP headers 
+7.Parse HTTP headers --DONE
 	-Type of request (GET,POST, etc..)
 	-Host, Content Type, Referer 
 
