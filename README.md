@@ -41,7 +41,7 @@ go run packetsniffer.go <flag>
 
 #### `--web <string>`
 
-Yes/no for web server and GUI
+Yes/no for web server and GUI ( localhost:8090 )
 
 #### `--filepath <path>`
 
