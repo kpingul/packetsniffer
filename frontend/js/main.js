@@ -38,7 +38,9 @@ xhr.onload = function() {
                                         nodesObj[node.SrcIP] = {
                                                 data: {
                                                         id: node.SrcIP,
+                                                        type: "IP",
                                                         label: node.SrcIP,
+                                                        linkLabel: "",
                                                         srcIP: node.SrcIP,
                                                         dstIP: node.DstIP,
                                                         shape: "circle"
@@ -50,7 +52,9 @@ xhr.onload = function() {
                                         nodesObj[node.DstIP] = {
                                                 data: {
                                                         id: node.DstIP,
+                                                        type: "IP",
                                                         label: node.DstIP,
+                                                        linkLabel: "",
                                                         srcIP: node.SrcIP,
                                                         dstIP: node.DstIP,
                                                         shape: "circle"
@@ -58,6 +62,20 @@ xhr.onload = function() {
                                         }
 
                                 }
+                                if ( node.HTTPHeader && node.HTTPHeader.Host  ) {
+                                        nodesObj[node.HTTPHeader.Host] = {
+                                                data: {
+                                                        id: node.HTTPHeader.Host,
+                                                        type: "HTTP",
+                                                        label: node.HTTPHeader.Host,
+                                                        linkLabel: node.HTTPHeader.Type,
+                                                        src: node.SrcIP,
+                                                        dst: node.HTTPHeader.Host
+
+                                                }
+                                        }
+                                }
+
                         })
                         
                         //store all our unique nodes into the nodes variable                                                
@@ -68,14 +86,28 @@ xhr.onload = function() {
 
                         //creates our edges/links 
                         nodes.forEach( (node,idx) => {
-                                edges.push({
-                                        data: {
-                                                id: node.data.srcIP + "-" + node.data.dstIP,
-                                                source: node.data.srcIP,
-                                                target: node.data.dstIP,
-                                                label: ""
-                                        }
-                                })
+                                console.log(node)
+                                if ( node.data.type == "IP") {
+
+                                        edges.push({
+                                                data: {
+                                                        id: node.data.srcIP + "-" + node.data.dstIP,
+                                                        source: node.data.srcIP,
+                                                        target: node.data.dstIP,
+                                                        label: ""
+                                                }
+                                        })
+                                } 
+                                if ( node.data.type == "HTTP") {
+                                        edges.push({
+                                                data: {
+                                                        id: node.data.src + "-" + node.data.dst,
+                                                        source: node.data.src,
+                                                        target: node.data.dst,
+                                                        label: node.data.linkLabel
+                                                }
+                                        })
+                                }
                         })
 
 
@@ -100,7 +132,7 @@ xhr.onload = function() {
                                                 'content': 'data(label)',
                                                 'font-size': '8',
                                                 'curve-style': 'bezier',
-                                                 "edge-text-rotation": "autorotate",
+                                                 "edge-text-rotation": "",
                                                 'target-arrow-shape': 'triangle',
                                                 'width': 2,
                                                 'line-color': '#ddd',
