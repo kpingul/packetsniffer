@@ -28,7 +28,7 @@ TODO--
 	-Type of request (GET,POST, etc..)
 	-Host, Content Type, Referer 
 
-8.Work on adding application layer data to GUI
+8.Work on adding application layer data to GUI -- DONE
 
 9.Add capability to upload pcap files
 	-use a pcap example from malware analysis and update the visualizer to showcase a real world attack using this tool. 
