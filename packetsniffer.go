@@ -30,6 +30,7 @@ var (
     	promiscuous  bool   = true
     	err          error
     	snifferDB *storm.DB
+    	pcapDB *storm.DB
     	errDB error
     	handle       *pcap.Handle
     	ethLayer layers.Ethernet
@@ -401,6 +402,13 @@ func parseHTTPHeader(header string) map[string]string {
 
 func openPCAPFileAndAnalyze(fileName string) {
 
+	pcapDB, errDB = storm.Open("pcap.db")
+	if errDB != nil {
+		log.Fatal(errDB) 
+	}
+
+	defer pcapDB.Close()
+
 	// Open file instead of device
     	handle, err = pcap.OpenOffline(fileName)
     	if err != nil { 
@@ -469,7 +477,7 @@ func openPCAPFileAndAnalyze(fileName string) {
 							}
 
 							//store in db
-							errSave := snifferDB.Save(&record)
+							errSave := pcapDB.Save(&record)
 							if errSave != nil {
 								log.Fatal(errSave)
 							}
@@ -484,7 +492,7 @@ func openPCAPFileAndAnalyze(fileName string) {
 							}
 
 							//store in db
-							errSave := snifferDB.Save(&record)
+							errSave := pcapDB.Save(&record)
 							if errSave != nil {
 								log.Fatal(errSave)
 							}	
@@ -498,7 +506,7 @@ func openPCAPFileAndAnalyze(fileName string) {
 							}
 
 							//store in db
-							errSave := snifferDB.Save(&record)
+							errSave := pcapDB.Save(&record)
 							if errSave != nil {
 								log.Fatal(errSave)
 							}
