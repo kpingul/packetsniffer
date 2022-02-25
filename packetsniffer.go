@@ -40,6 +40,10 @@ var (
     	dnsLayer layers.DNS
 )
 
+type DNSRecord struct {
+  	Domain string 
+  	Type string 
+}
 type Record struct {
   	ID  int `storm:"id,increment"` // primary key
   	Protocol string 
@@ -47,13 +51,7 @@ type Record struct {
   	DstIP string 
   	Payload string
   	HTTPHeader map[string]string
-}
-type DNSRecord struct {
-	ID string `storm:"id,increment"`// primary key
-  	Domain string 
-  	SrcIP string 
-  	DstIP string 
-
+  	DNS DNSRecord
 }
 
 func main() {	
@@ -334,6 +332,24 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							for _, dnsAnswer := range dnsLayer.Answers {
 								if dnsAnswer.IP.String() != "<nil>" {
 									fmt.Println("DNS Answer: ", dnsAnswer.IP.String())
+
+
+									//create record
+				                			record := Record{
+										Protocol: "DNS",
+										SrcIP: ipLayer.SrcIP.String(),
+										DstIP: ipLayer.DstIP.String(),
+										DNS: DNSRecord{
+											Domain: dnsAnswer.IP.String(),
+											Type: dnsQuestion.Type.String(),
+										},
+									}
+
+									//store in db
+									errSave := snifferDB.Save(&record)
+									if errSave != nil {
+										log.Fatal(errSave)
+									}
 								}
 							}
 
@@ -360,13 +376,6 @@ func stopSniffer() {
 func CreateRecord (ipLayer layers.IPv4) Record{
 	return Record{
 		Protocol: ipLayer.Protocol.String(),
-		SrcIP: ipLayer.SrcIP.String(),
-		DstIP: ipLayer.DstIP.String(),
-	}
-}
-func CreateDNSRecord (dnsLayer layers.DNS) DNSRecord{
-	return DNSRecord{
-		Domain: ipLayer.Protocol.String(),
 		SrcIP: ipLayer.SrcIP.String(),
 		DstIP: ipLayer.DstIP.String(),
 	}
@@ -538,6 +547,23 @@ func openPCAPFileAndAnalyze(fileName string) {
 							for _, dnsAnswer := range dnsLayer.Answers {
 								if dnsAnswer.IP.String() != "<nil>" {
 									fmt.Println("DNS Answer: ", dnsAnswer.IP.String())
+
+									//create record
+				                			record := Record{
+										Protocol: "DNS",
+										SrcIP: ipLayer.SrcIP.String(),
+										DstIP: ipLayer.DstIP.String(),
+										DNS: DNSRecord{
+											Domain: dnsAnswer.IP.String(),
+											Type: dnsQuestion.Type.String(),
+										},
+									}
+
+									//store in db
+									errSave := snifferDB.Save(&record)
+									if errSave != nil {
+										log.Fatal(errSave)
+									}
 								}
 							}
 
