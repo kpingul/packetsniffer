@@ -1,4 +1,8 @@
 const API_RECORDS = "http://127.0.0.1:8090/api/records"
+const PROTOCOLS = {
+        IP: "IP",
+        HTTP: "HTTP"
+}
 
 //create XMLHttpRequest object
 const xhr = new XMLHttpRequest()
@@ -38,7 +42,7 @@ xhr.onload = function() {
                                         nodesObj[node.SrcIP] = {
                                                 data: {
                                                         id: node.SrcIP,
-                                                        type: "IP",
+                                                        type: PROTOCOLS.IP,
                                                         label: node.SrcIP,
                                                         linkLabel: "",
                                                         srcIP: node.SrcIP,
@@ -52,7 +56,7 @@ xhr.onload = function() {
                                         nodesObj[node.DstIP] = {
                                                 data: {
                                                         id: node.DstIP,
-                                                        type: "IP",
+                                                        type: PROTOCOLS.IP,
                                                         label: node.DstIP,
                                                         linkLabel: "",
                                                         srcIP: node.SrcIP,
@@ -66,7 +70,7 @@ xhr.onload = function() {
                                         nodesObj[node.HTTPHeader.Host] = {
                                                 data: {
                                                         id: node.HTTPHeader.Host,
-                                                        type: "HTTP",
+                                                        type: PROTOCOLS.HTTP,
                                                         label: node.HTTPHeader.Host,
                                                         linkLabel: node.HTTPHeader.Type,
                                                         src: node.SrcIP,
@@ -87,7 +91,7 @@ xhr.onload = function() {
                         //creates our edges/links 
                         nodes.forEach( (node,idx) => {
                                 console.log(node)
-                                if ( node.data.type == "IP") {
+                                if ( node.data.type == PROTOCOLS.IP) {
 
                                         edges.push({
                                                 data: {
@@ -98,7 +102,7 @@ xhr.onload = function() {
                                                 }
                                         })
                                 } 
-                                if ( node.data.type == "HTTP") {
+                                if ( node.data.type == PROTOCOLS.HTTP) {
                                         edges.push({
                                                 data: {
                                                         id: node.data.src + "-" + node.data.dst,
