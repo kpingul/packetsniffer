@@ -1,8 +1,19 @@
+//Global variables
 const API_RECORDS = "http://127.0.0.1:8090/api/records"
 const PROTOCOLS = {
         IP: "IP",
         HTTP: "HTTP"
 }
+
+//cytoscape configuration
+var cytoConfig = {
+        nodes: [],
+        nodesObj: {},
+        nodes: [],
+        edgesObj: {},
+        edges: [];
+}
+
 
 //create XMLHttpRequest object
 const xhr = new XMLHttpRequest()
@@ -24,22 +35,14 @@ xhr.onload = function() {
 
                 if ( data.length > 0 ) {
 
-                        //setting our cytoscape 
-                        //variables
-                        var     nodes = [],
-                                nodesObj = {},
-                                nodes = [],
-                                edgesObj = {},
-                                edges = [];
-
 
                         //creates a nodes object to
                         //keep track of duplication
                         //**should move to server side
                         //to prevent performance issues
                         data.forEach( (node, idx) => {
-                                if ( !nodesObj.hasOwnProperty(node.SrcIP) ) {
-                                        nodesObj[node.SrcIP] = {
+                                if ( !cytoConfig.nodesObj.hasOwnProperty(node.SrcIP) ) {
+                                        cytoConfig.nodesObj[node.SrcIP] = {
                                                 data: {
                                                         id: node.SrcIP,
                                                         type: PROTOCOLS.IP,
@@ -52,8 +55,8 @@ xhr.onload = function() {
                                         }
 
                                 }
-                                if ( !nodesObj.hasOwnProperty(node.DstIP) ) {
-                                        nodesObj[node.DstIP] = {
+                                if ( !cytoConfig.nodesObj.hasOwnProperty(node.DstIP) ) {
+                                        cytoConfig.nodesObj[node.DstIP] = {
                                                 data: {
                                                         id: node.DstIP,
                                                         type: PROTOCOLS.IP,
@@ -67,7 +70,7 @@ xhr.onload = function() {
 
                                 }
                                 if ( node.HTTPHeader && node.HTTPHeader.Host  ) {
-                                        nodesObj[node.HTTPHeader.Host] = {
+                                        cytoConfig.nodesObj[node.HTTPHeader.Host] = {
                                                 data: {
                                                         id: node.HTTPHeader.Host,
                                                         type: PROTOCOLS.HTTP,
@@ -83,17 +86,17 @@ xhr.onload = function() {
                         })
                         
                         //store all our unique nodes into the nodes variable                                                
-                        Object.keys(nodesObj).forEach( (key, val) => {
-                                nodes.push(nodesObj[key])
+                        Object.keys(cytoConfig.nodesObj).forEach( (key, val) => {
+                                cytoConfig.nodes.push(cytoConfig.nodesObj[key])
                         })
 
 
                         //creates our edges/links 
-                        nodes.forEach( (node,idx) => {
+                        cytoConfig.nodes.forEach( (node,idx) => {
                                 console.log(node)
                                 if ( node.data.type == PROTOCOLS.IP) {
 
-                                        edges.push({
+                                        cytoConfig.edges.push({
                                                 data: {
                                                         id: node.data.srcIP + "-" + node.data.dstIP,
                                                         source: node.data.srcIP,
@@ -103,7 +106,7 @@ xhr.onload = function() {
                                         })
                                 } 
                                 if ( node.data.type == PROTOCOLS.HTTP) {
-                                        edges.push({
+                                        cytoConfig.edges.push({
                                                 data: {
                                                         id: node.data.src + "-" + node.data.dst,
                                                         source: node.data.src,
@@ -114,64 +117,8 @@ xhr.onload = function() {
                                 }
                         })
 
-
-                        //init cytoscape library and pass in our live data
-                        var cy = cytoscape({
-                                container: document.getElementById('cy'),
-                                boxSelectionEnabled: false,
-                                autounselectify: true,
-                                style:  cytoscape.stylesheet()
-                                        .selector('node')
-                                        .style({
-                                                'content': 'data(label)',
-                                                'width': '20',
-                                                'height': '20',
-                                                // 'shape': 'data(shape)',
-                                                'font-size': '11',
-                                                "text-valign": "top",
-                                                "text-halign": "center"
-                                        })
-                                        .selector('edge')
-                                        .style({
-                                                'content': 'data(label)',
-                                                'font-size': '8',
-                                                'curve-style': 'bezier',
-                                                 "edge-text-rotation": "",
-                                                'target-arrow-shape': 'triangle',
-                                                'width': 2,
-                                                'line-color': '#ddd',
-                                                'target-arrow-color': '#ddd'
-                                        })
-                                        .selector('.highlighted')
-                                        .style({
-                                                'background-color': '#D2042D',
-                                                'line-color': '#B0C4DE ',
-                                                'target-arrow-color': '#B0C4DE ',
-                                                'transition-property': 'background-color, line-color, target-arrow-color',
-                                                'transition-duration': '0.5s'
-                                        }),
-                                elements: {
-                                        nodes: nodes,
-                                        edges: edges
-                                },
-
-                                layout: {
-                                        name: 'breadthfirst',
-                                        directed: true,
-                                        padding: 10
-                                }
-                        });
-
-                        var bfs = cy.elements().bfs('#a', function(){}, true);
-
-                        var i = 0;
-                        var highlightNextEle = function(){
-                                if( i < bfs.path.length ){
-                                        bfs.path[i].addClass('highlighted');
-                                        i++;
-                                        setTimeout(highlightNextEle, 1000);
-                                }
-                        };
+                        //run graph
+                        runCytoScape()
                         
                 }
         } else if (xhr.status === 404) {
@@ -193,4 +140,63 @@ function createNode ( node ) {
                         shape: "circle",
                 }
         }
+}
+
+function runCytoScape() {
+        var cy = cytoscape({
+                container: document.getElementById('cy'),
+                boxSelectionEnabled: false,
+                autounselectify: true,
+                style:  cytoscape.stylesheet()
+                        .selector('node')
+                        .style({
+                                'content': 'data(label)',
+                                'width': '20',
+                                'height': '20',
+                                // 'shape': 'data(shape)',
+                                'font-size': '11',
+                                "text-valign": "top",
+                                "text-halign": "center"
+                        })
+                        .selector('edge')
+                        .style({
+                                'content': 'data(label)',
+                                'font-size': '8',
+                                'curve-style': 'bezier',
+                                 "edge-text-rotation": "",
+                                'target-arrow-shape': 'triangle',
+                                'width': 2,
+                                'line-color': '#ddd',
+                                'target-arrow-color': '#ddd'
+                        })
+                        .selector('.highlighted')
+                        .style({
+                                'background-color': '#D2042D',
+                                'line-color': '#B0C4DE ',
+                                'target-arrow-color': '#B0C4DE ',
+                                'transition-property': 'background-color, line-color, target-arrow-color',
+                                'transition-duration': '0.5s'
+                        }),
+                elements: {
+                        nodes: cytoConfig.nodes,
+                        edges: cytoConfig.edges
+                },
+
+                layout: {
+                        name: 'breadthfirst',
+                        directed: true,
+                        padding: 10
+                }
+        });
+
+        var bfs = cy.elements().bfs('#a', function(){}, true);
+
+        var i = 0;
+        var highlightNextEle = function(){
+                if( i < bfs.path.length ){
+                        bfs.path[i].addClass('highlighted');
+                        i++;
+                        setTimeout(highlightNextEle, 1000);
+                }
+        };
 }
