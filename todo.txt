@@ -34,9 +34,11 @@ TODO--
 		-integrate into frontend
 
 10.Clean up frontend code
-		-specifically protocols 
+		-specifically protocols --Done
 
-9.Add capability to upload pcap files
+11.Add highlighting on graph
+
+12.Add capability to upload pcap files
 	-use a pcap example from malware analysis and update the visualizer to showcase a real world attack using this tool. 
 	
 
