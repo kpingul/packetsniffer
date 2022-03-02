@@ -117,7 +117,6 @@ function createNode ( id, type, label, linkLabel, srcIP, dstIP, shape ) {
 }
   
 function runCytoScape() {
-        console.log(cytoConfig)
         var cy = cytoscape({
                 container: document.getElementById('cy'),
                 boxSelectionEnabled: false,
@@ -164,6 +163,9 @@ function runCytoScape() {
                 }
         });
 
+
+        //find a way to get the root node and highlight children 
+        //cytoConfig.nodes contains the nodes, which one is root/host?
         var bfs = cy.elements().bfs('#a', function(){}, true);
 
         var i = 0;
