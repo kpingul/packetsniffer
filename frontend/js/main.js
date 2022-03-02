@@ -11,7 +11,7 @@ var cytoConfig = {
         nodesObj: {},
         nodes: [],
         edgesObj: {},
-        edges: [];
+        edges: []
 }
 
 
@@ -42,45 +42,15 @@ xhr.onload = function() {
                         //to prevent performance issues
                         data.forEach( (node, idx) => {
                                 if ( !cytoConfig.nodesObj.hasOwnProperty(node.SrcIP) ) {
-                                        cytoConfig.nodesObj[node.SrcIP] = {
-                                                data: {
-                                                        id: node.SrcIP,
-                                                        type: PROTOCOLS.IP,
-                                                        label: node.SrcIP,
-                                                        linkLabel: "",
-                                                        srcIP: node.SrcIP,
-                                                        dstIP: node.DstIP,
-                                                        shape: "circle"
-                                                }
-                                        }
+                                        cytoConfig.nodesObj[node.SrcIP] = createNode(node.SrcIP, PROTOCOLS.IP, node.SrcIP, "", node.SrcIP, node.DstIP, "circle")
 
                                 }
                                 if ( !cytoConfig.nodesObj.hasOwnProperty(node.DstIP) ) {
-                                        cytoConfig.nodesObj[node.DstIP] = {
-                                                data: {
-                                                        id: node.DstIP,
-                                                        type: PROTOCOLS.IP,
-                                                        label: node.DstIP,
-                                                        linkLabel: "",
-                                                        srcIP: node.SrcIP,
-                                                        dstIP: node.DstIP,
-                                                        shape: "circle"
-                                                }
-                                        }
+                                        cytoConfig.nodesObj[node.DstIP] = createNode(node.DstIP, PROTOCOLS.IP, node.DstIP, "", node.SrcIP, node.DstIP, "circle")
 
                                 }
                                 if ( node.HTTPHeader && node.HTTPHeader.Host  ) {
-                                        cytoConfig.nodesObj[node.HTTPHeader.Host] = {
-                                                data: {
-                                                        id: node.HTTPHeader.Host,
-                                                        type: PROTOCOLS.HTTP,
-                                                        label: node.HTTPHeader.Host,
-                                                        linkLabel: node.HTTPHeader.Type,
-                                                        src: node.SrcIP,
-                                                        dst: node.HTTPHeader.Host
-
-                                                }
-                                        }
+                                        cytoConfig.nodesObj[node.HTTPHeader.Host] = createNode(node.HTTPHeader.Host, PROTOCOLS.HTTP, node.HTTPHeader.Host, node.HTTPHeader.Type, node.SrcIP, node.HTTPHeader.Host, "circle")
                                 }
 
                         })
@@ -108,9 +78,9 @@ xhr.onload = function() {
                                 if ( node.data.type == PROTOCOLS.HTTP) {
                                         cytoConfig.edges.push({
                                                 data: {
-                                                        id: node.data.src + "-" + node.data.dst,
-                                                        source: node.data.src,
-                                                        target: node.data.dst,
+                                                        id: node.data.srcIP + "-" + node.data.dstIP,
+                                                        source: node.data.srcIP,
+                                                        target: node.data.dstIP,
                                                         label: node.data.linkLabel
                                                 }
                                         })
@@ -132,17 +102,22 @@ xhr.onerror = function() {
 }
 
 
-function createNode ( node ) {
+function createNode ( id, type, label, linkLabel, srcIP, dstIP, shape ) {
         return {
                 data: {
-                        id: node.ID,
-                        label: node.SrcIP,
-                        shape: "circle",
+                        id: id,
+                        type: type,
+                        label: label,
+                        linkLabel: linkLabel,
+                        srcIP: srcIP,
+                        dstIP: dstIP,
+                        shape: shape,
                 }
         }
 }
-
+  
 function runCytoScape() {
+        console.log(cytoConfig)
         var cy = cytoscape({
                 container: document.getElementById('cy'),
                 boxSelectionEnabled: false,
