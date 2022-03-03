@@ -30,13 +30,14 @@ TODO--
 
 8.Work on adding application layer data to GUI -- DONE
 
-9.Add DNS fields
-		-integrate into frontend
 
-10.Clean up frontend code
+9.Clean up frontend code
 		-specifically protocols --Done
 
-11.Add highlighting on graph
+10.Add highlighting on graph -- DONE
+
+11.Add DNS fields
+		-integrate into frontend
 
 12.Add capability to upload pcap files
 	-use a pcap example from malware analysis and update the visualizer to showcase a real world attack using this tool. 
