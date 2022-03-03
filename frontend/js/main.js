@@ -137,7 +137,6 @@ function runCytoScape() {
                                 'content': 'data(label)',
                                 'font-size': '8',
                                 'curve-style': 'bezier',
-                                 "edge-text-rotation": "",
                                 'target-arrow-shape': 'triangle',
                                 'width': 2,
                                 'line-color': '#ddd',
@@ -166,7 +165,7 @@ function runCytoScape() {
 
         //find a way to get the root node and highlight children 
         //cytoConfig.nodes contains the nodes, which one is root/host?
-        var bfs = cy.elements().bfs('#a', function(){}, true);
+        var bfs = cy.elements().bfs('#' + cytoConfig.nodes[0].data.id, function(){}, true);
 
         var i = 0;
         var highlightNextEle = function(){
@@ -176,4 +175,7 @@ function runCytoScape() {
                         setTimeout(highlightNextEle, 1000);
                 }
         };
+
+        //execute highlight nodes
+        highlightNextEle()
 }
