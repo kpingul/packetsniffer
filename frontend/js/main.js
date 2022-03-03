@@ -2,7 +2,8 @@
 const API_RECORDS = "http://127.0.0.1:8090/api/records"
 const PROTOCOLS = {
         IP: "IP",
-        HTTP: "HTTP"
+        HTTP: "HTTP",
+        DNS: "DNS"
 }
 
 //cytoscape configuration
