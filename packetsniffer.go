@@ -340,7 +340,7 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 										SrcIP: ipLayer.SrcIP.String(),
 										DstIP: ipLayer.DstIP.String(),
 										DNS: DNSRecord{
-											Domain: dnsAnswer.IP.String(),
+											Domain: string(dnsAnswer.Name),
 											Type: dnsQuestion.Type.String(),
 										},
 									}
@@ -554,7 +554,7 @@ func openPCAPFileAndAnalyze(fileName string) {
 										SrcIP: ipLayer.SrcIP.String(),
 										DstIP: ipLayer.DstIP.String(),
 										DNS: DNSRecord{
-											Domain: dnsAnswer.IP.String(),
+											Domain: string(dnsAnswer.Name),
 											Type: dnsQuestion.Type.String(),
 										},
 									}
