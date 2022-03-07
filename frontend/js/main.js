@@ -52,6 +52,9 @@ xhr.onload = function() {
                                 }
                                 if ( node.HTTPHeader && node.HTTPHeader.Host  ) {
                                         cytoConfig.nodesObj[node.HTTPHeader.Host] = createNode(node.HTTPHeader.Host, PROTOCOLS.HTTP, node.HTTPHeader.Host, node.HTTPHeader.Type, node.SrcIP, node.HTTPHeader.Host, "circle")
+                                } 
+                                if ( node.DNS && node.DNS.Domain  ) {
+                                        cytoConfig.nodesObj[node.DNS.Domain] = createNode(node.DNS.Domain, PROTOCOLS.DNS, node.DNS.Domain, node.DNS.Type, node.SrcIP, node.DNS.Domain, "circle")
                                 }
 
                         })
@@ -77,6 +80,16 @@ xhr.onload = function() {
                                         })
                                 } 
                                 if ( node.data.type == PROTOCOLS.HTTP) {
+                                        cytoConfig.edges.push({
+                                                data: {
+                                                        id: node.data.srcIP + "-" + node.data.dstIP,
+                                                        source: node.data.srcIP,
+                                                        target: node.data.dstIP,
+                                                        label: node.data.linkLabel
+                                                }
+                                        })
+                                }  
+                                if ( node.data.type == PROTOCOLS.DNS) {
                                         cytoConfig.edges.push({
                                                 data: {
                                                         id: node.data.srcIP + "-" + node.data.dstIP,
