@@ -37,7 +37,7 @@ TODO--
 10.Add highlighting on graph -- DONE
 
 11.Add DNS fields
-		-integrate into frontend
+		-integrate into frontend -- DONE
 
 12.Add capability to upload pcap files
 	-use a pcap example from malware analysis and update the visualizer to showcase a real world attack using this tool. 
