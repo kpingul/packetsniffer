@@ -7,7 +7,7 @@ const PROTOCOLS = {
 }
 
 //cytoscape configuration
-var cytoConfig = {
+let cytoConfig = {
         nodes: [],
         nodesObj: {},
         nodes: [],
@@ -131,7 +131,7 @@ function createNode ( id, type, label, linkLabel, srcIP, dstIP, shape ) {
 }
   
 function runCytoScape() {
-        var cy = cytoscape({
+        let cy = cytoscape({
                 container: document.getElementById('cy'),
                 boxSelectionEnabled: false,
                 autounselectify: true,
@@ -179,10 +179,10 @@ function runCytoScape() {
 
         //find a way to get the root node and highlight children 
         //cytoConfig.nodes contains the nodes, which one is root/host?
-        var bfs = cy.elements().bfs('#' + cytoConfig.nodes[0].data.id, function(){}, true);
+        let bfs = cy.elements().bfs('#' + cytoConfig.nodes[0].data.id, function(){}, true);
 
-        var i = 0;
-        var highlightNextEle = function(){
+        let i = 0;
+        let highlightNextEle = function(){
                 if( i < bfs.path.length ){
                         bfs.path[i].addClass('highlighted');
                         i++;
