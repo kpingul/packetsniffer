@@ -113,6 +113,7 @@ func main() {
 				} else {
 					valChecks = false
 				     	fmt.Println("ANALYZE FILE..")
+				     	openPCAPFileAndAnalyze(c.String("filepath"))
 
 				}
 		    	}
@@ -453,12 +454,9 @@ func openPCAPFileAndAnalyze(fileName string) {
 
 	        	//extract ipv4 data
 	        	if layerType == layers.LayerTypeIPv4 {
-	                	
-	                	fmt.Println(ipLayer.DstIP.String())
 
 	                	// create record
 	                	record := CreateRecord(ipLayer)
-	                	fmt.Println(record)
 
 	            	}
 
