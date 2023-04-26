@@ -71,7 +71,7 @@ Show current version
 
 * Create a threat detection service 
 	- based on ip addresses and domains
-	- checks whether workstation visited a potential suspicious or malicious website 
+	- checks whether a workstation visited a potentially suspicious or malicious website 
 	- internal host to host communication 
 	- utlize free threat intel feeds and open source APIs
 	- scheduling mechanism to update feeds
