@@ -70,10 +70,10 @@ Show current version
 ## Short term goals
 
 * Create a threat detection service 
-	- based on ip addresses, domains
-	- checks whether workstation visisted a possible suspicious or malicious website 
+	- based on ip addresses and domains
+	- checks whether workstation visited a potential suspicious or malicious website 
 	- internal host to host communication 
-	- utlize free threat intel feeds and open source API's
+	- utlize free threat intel feeds and open source APIs
 	- scheduling mechanism to update feeds
 	
 * Create a UI for pcap file analysis
