@@ -317,10 +317,7 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							if errSave != nil {
 								log.Fatal(errSave)
 							}
-				        	
-				        	
-				        	default:
-			        	}
+
 						case strings.Contains(string(applicationLayer.Payload()), "SSH"):
 									//create record
 									record := Record{
@@ -337,8 +334,6 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							}
 							
 							
-							default:
-						}
 						case strings.Contains(string(applicationLayer.Payload()), "SMTP"):
 									//create record
 									record := Record{
@@ -355,8 +350,8 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							}
 							
 							
-							default:
-						}
+				        	default:
+			        	}
 
 			    	}
 		        }
