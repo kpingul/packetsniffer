@@ -319,8 +319,8 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							}
 
 						case strings.Contains(string(applicationLayer.Payload()), "SSH"):
-									//create record
-									record := Record{
+							//create record
+							record := Record{
 								Protocol: "SSH",
 								SrcIP: ipLayer.SrcIP.String(),
 								DstIP: ipLayer.DstIP.String(),
@@ -335,8 +335,8 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 							
 							
 						case strings.Contains(string(applicationLayer.Payload()), "SMTP"):
-									//create record
-									record := Record{
+							//create record
+							record := Record{
 								Protocol: "SMTP",
 								SrcIP: ipLayer.SrcIP.String(),
 								DstIP: ipLayer.DstIP.String(),
