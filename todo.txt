@@ -16,6 +16,7 @@ TODO--
 		-how do we configure sniffer to stop/run on demand
 		-30 seconds? 1 minute? etc.
 	-create service that opens reads pcap files --DONE
+	-internal host to host communication --done
 
 5.Add visualizations for captured traffic using cytoscape.js --done
 
