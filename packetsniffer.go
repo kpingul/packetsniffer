@@ -664,28 +664,36 @@ func getAllEventRecords () []Record{
 
 }
 
-func isPrivateIPv4(ipStr string) (bool, error) {
+func checkHostToHostInternalCommunication(srcIP string, dstIP string) bool{
+	if ( isPrivateIPv4(srcIP) && isPrivateIPv4(dstIP) ) {
+		return true
+	}
+
+	return false
+}
+
+func isPrivateIPv4(ipStr string) bool {
 	ip := net.ParseIP(ipStr)
 	if ip == nil {
-		return false, fmt.Errorf("Invalid IP address: %s", ipStr)
+		return false
 	}
 
 	if ip.IsLoopback() {
-		return true, nil
+		return true
 	}
 
 	if ip4 := ip.To4(); ip4 != nil {
 		switch {
 		case ip4[0] == 10:
-			return true, nil
+			return true
 		case ip4[0] == 172 && ip4[1] >= 16 && ip4[1] <= 31:
-			return true, nil
+			return true
 		case ip4[0] == 192 && ip4[1] == 168:
-			return true, nil
+			return true
 		default:
-			return false, nil
+			return false
 		}
 	}
 
-	return false, fmt.Errorf("IPv6 addresses are not supported")
+	return false
 }
