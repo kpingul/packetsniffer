@@ -51,6 +51,7 @@ type Record struct {
   	DstIP string 
   	Payload string
   	HTTPHeader map[string]string
+	HostToHost bool
   	DNS DNSRecord
 }
 
@@ -424,6 +425,7 @@ func CreateRecord (ipLayer layers.IPv4) Record{
 		Protocol: ipLayer.Protocol.String(),
 		SrcIP: ipLayer.SrcIP.String(),
 		DstIP: ipLayer.DstIP.String(),
+		HostToHost: checkHostToHostInternalCommunication(ipLayer.SrcIP.String(), ipLayer.DstIP.String()),
 	}
 }
 func parseHTTPHeader(header string) map[string]string {
