@@ -252,6 +252,30 @@ func runSniffer(snifferDB *storm.DB, protocol string, port int64) {
 		                fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
 		                fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
 
+					//extract SNI
+					if len(tcpLayer.Payload) > 0 {
+						// TLS Handshake?
+						if tcpLayer.Payload[0] == 0x16 {
+							// Parse the packet as a TLS handshake
+							tls := &layers.TLS{}
+							err := tls.DecodeFromBytes(tcpLayer.Payload, gopacket.NilDecodeFeedback)
+							if err != nil {
+								continue
+							}
+		
+							// Check for ClientHello
+							if len(tls.Handshake) > 0 && tls.Handshake[0].Type == layers.HandshakeTypeClientHello {
+								// Extract SNI
+								for _, ext := range tls.Handshake[0].Extensions {
+									if ext.Type == layers.TLSExtensionTypeServerName {
+										sni := string(ext.Data[2:])
+										log.Printf("SNI: %s\n", sni)
+									}
+								}
+							}
+						}
+					}
+
 			        // Application layer contains things like HTTP
 			        //FTP, SMTP, etc..
 			    	applicationLayer := packet.ApplicationLayer()
