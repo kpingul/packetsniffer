@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dashboard/.next/
+dashboard/out/
+sensor/sensor
+*.exe
+
+# Data files - NO PACKET DATA
+dashboard/data/*.db
+dashboard/data/*.sqlite
+sensor/captures/*.json
+sensor/captures/*.pcap
+sensor/captures/*.pcapng
+sensor/captures/*.cap
+*.pcap
+*.pcapng
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Claude settings
+.claude/
