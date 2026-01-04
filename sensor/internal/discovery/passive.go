@@ -189,7 +189,7 @@ func formatMAC(addr []byte) string {
 }
 
 func formatHex(b byte) string {
-	const hex = "0123456789ab"
+	const hex = "0123456789abcdef"
 	return string(hex[b>>4]) + string(hex[b&0xf])
 }
 
